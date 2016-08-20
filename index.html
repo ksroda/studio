@@ -107,44 +107,7 @@
 
         <div ng-view id="page-wrapper" class="border2"></div>
 
-        <script>
-          const app = angular.module('myApp', ['ngRoute'])
-          app.config(function($routeProvider) {
-              $routeProvider
-                .when("/", {
-                    templateUrl : "about.html"
-                })
-                .when("/baza_pytan", {
-                    templateUrl : 'baza_pytan.html',
-                    controller: 'baza_pytan_controller'
-                })
-                .when("/aktualne_pytania", {
-                    templateUrl : "aktualne_pytania.html"
-                })
-                .when("/dodaj_pytanie", {
-                    templateUrl : "dodaj_pytanie.html"
-                })
-                .when("/profile", {
-                    templateUrl : "profile.html"
-                })
-          })
-          app.controller('myCtrl', ['$scope', $scope => {
-            $scope.test = 'hello'
-            // alert('hello')
-          }])
-          app.service('httpService', function($http) {
-            this.get = function (url) {
-              return $http.get(url)
-            }
-          })
-          app.controller('baza_pytan_controller',
-            ['$scope', 'httpService', ($scope, httpService) => {
-              httpService.get('./baza_pytan.json')
-                .then(response => {
-                  $scope.baza_pytan = response.data
-                })
-            }])
-        </script>
+        <script src="bundle.js"></script>
 
     <!-- jQuery -->
     <script src="js/jquery.js"></script>
