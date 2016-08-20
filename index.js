@@ -1,4 +1,11 @@
-angular.module('myApp', ['ngRoute'])
+import angular from 'angular'
+import angularRoute from 'angular-route'
+
+import API from './api'
+
+import { runCamera, stopCamera, captureImage } from './camera'
+
+angular.module('myApp', [angularRoute])
   .config(function($routeProvider) {
     $routeProvider
       .when("/", {
@@ -17,20 +24,28 @@ angular.module('myApp', ['ngRoute'])
       .when('/profile', {
           templateUrl : 'views/profile.html'
       })
+      .when('/webcam', {
+          templateUrl : 'views/webcam.html',
+          controller: 'webcam_controller'
+      })
   })
   .controller('myCtrl', ['$scope', $scope => {
     $scope.test = 'hello'
-    // alert('hello')
   }])
-  .service('httpService', function($http) {
-    this.get = function (url) {
-      return $http.get(url)
-    }
-  })
-  .controller('baza_pytan_controller',
-    ['$scope', 'httpService', ($scope, httpService) => {
-      httpService.get('./baza_pytan.json')
-        .then(response => {
+  .controller('baza_pytan_controller', ['$scope', $scope => {
+    API.questions.get()
+      .then(response => {
+        $scope.$apply(function () {
           $scope.baza_pytan = response.data
         })
+      })
     }])
+  .controller('webcam_controller', ['$scope', $scope => {
+    const video = runCamera()
+    $scope.captureImage = () => {
+      video.captureImage()
+    }
+    $scope.$on("$destroy", function() {
+      stopCamera()
+    })
+  }])
