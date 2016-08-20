@@ -14,31 +14,31 @@
                     <div class="form-group">
                       <label class="control-label col-sm-2" for="question">Treść:</label>
                       <div class="col-sm-10">
-                        <textarea class="form-control" id="question" placeholder="Enter question" required></textarea>
+                        <textarea class="form-control" id="question" ng-model="question" placeholder="Enter question" required></textarea>
                       </div>
                     </div>
                     <div class="form-group">
                       <label class="control-label col-sm-2" for="answerA">A)</label>
                       <div class="col-sm-10">
-                        <textarea class="form-control" id="answerA" placeholder="Enter answer" required></textarea>
+                        <textarea class="form-control" id="answerA" ng-model="answerA" placeholder="Enter answer" required></textarea>
                       </div>
                     </div>
                     <div class="form-group">
                       <label class="control-label col-sm-2" for="answerB">B)</label>
                       <div class="col-sm-10">
-                        <textarea class="form-control" id="answerB" placeholder="Enter answer" required></textarea>
+                        <textarea class="form-control" id="answerB" ng-model="answerB"  placeholder="Enter answer" required></textarea>
                       </div>
                     </div>
                     <div class="form-group">
                       <label class="control-label col-sm-2" for="answerC">C)</label>
                       <div class="col-sm-10">
-                        <textarea class="form-control" id="answerC" placeholder="Enter answer" required></textarea>
+                        <textarea class="form-control" id="answerC" ng-model="answerC" placeholder="Enter answer" required></textarea>
                       </div>
                     </div>
                     <div class="form-group">
                       <label class="control-label col-sm-2" for="answerD">D)</label>
                       <div class="col-sm-10">
-                        <textarea class="form-control" id="answerD" placeholder="Enter answer" required></textarea>
+                        <textarea class="form-control" id="answerD" ng-model="answerD" placeholder="Enter answer" required></textarea>
                       </div>
                     </div>
                     <div class="form-group">
@@ -50,20 +50,14 @@
                     </div>
                     <div class="form-group">
                       <div class="col-sm-offset-2 col-sm-10">
-                        <button type="submit" class="btn btn-default">Submit</button>
+                        <button type="submit" ng-click="addQuestion(question, answerA, answerB, answerC, answerD)" class="btn btn-default">Submit</button>
                       </div>
                     </div>
                   </form>
               </div>
           </div>
           <!-- /.row -->
-
-
-
       </div>
       <!-- /.container-fluid -->
-
   </div>
   <!-- /#page-wrapper -->
-
-<!-- /#wrapper -->

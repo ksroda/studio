@@ -12,21 +12,64 @@
 
         <div class="row">
             <div class="col-lg-12">
-
-
-To będzie profil... [TBD] [TBC] [CDN] [ETC] [ITP] [ITD]
-
-</div>
+                Imię: {{person.name}}<br/>
+                Nazwisko: {{person.surname}}
+            </div>
         </div>
         <!-- /.row -->
 
+        <div class="row">
+            <button type="button" ng-click="show()" class="btn btn-primary">Zmień hasło</button>
+            <div ng-show="pswd_change">
+                <form class="form-horizontal" role="form" name="form">
+                    <div class="form-group">
+                      <label class="control-label col-sm-2" for="question">Wprowadź stare hasło:</label>
+                      <div class="col-sm-10">
+                        <input type="password" class="form-control" id="question" ng-model="old_pswd" placeholder="stare hasło" required></input>
+                      </div>
+                    </div>
+                    <div class="form-group">
+                      <label class="control-label col-sm-2" for="answerA">Wprowadź nowe hasło:</label>
+                      <div class="col-sm-10">
+                       <input data-ng-model='user.password' type="password" name='password' placeholder='password' required>
+                      <div ng-show="form.password.$error.required">
+                        Field required</div>
+                      </div>
+                    </div>
+                    <div class="form-group">
+                      <label class="control-label col-sm-2" for="answerB">Ponownie wprowadź nowe hasło:</label>
+                      <div class="col-sm-10">
+                         <input ng-model='user.password_verify' type="password" name='confirm_password' placeholder='confirm password' required data-password-verify="user.password">
+                        <div ng-show="form.confirm_password.$error.required">
+                          Field required!</div>
+                       <div ng-show="form.confirm_password.$error.passwordVerify">
+                         Fields are not equal!</div>
 
+                      </div>
+
+
+
+
+
+                    </div>
+                    <div class="form-group">
+                      <div class="col-sm-offset-2 col-sm-10">
+                        <button type="submit" ng-click="form.$valid &amp;&amp; changePassword(old_pswd, new_pswd1, new_pswd2)" class="btn btn-primary">Zatwierdź</button>
+                      </div>
+                    </div>
+                    <div class="form-group">
+                      <div class="col-sm-offset-2 col-sm-10">
+                        <button type="reset" ng-click="reset()" class="btn btn-danger">Anuluj</button>
+                      </div>
+                    </div>
+
+
+                  </form>
+            </div>
+        </div>
 
     </div>
     <!-- /.container-fluid -->
 
 </div>
 <!-- /#page-wrapper -->
-
-</div>
-<!-- /#wrapper -->

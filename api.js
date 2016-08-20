@@ -1,21 +1,22 @@
 import axios from 'axios'
 
-const getPromise = config =>
-  axios(config).catch(error => console.error(error))
+const getPromise = (url, data, method) => axios({
+  method: method || 'get',
+  url,
+  data
+}).catch(error => console.error(error))
 
 const api = {
   questions: {
-    get: () => getPromise({
-      method: 'get',
-      url: './baza_pytan.json'
-    })
+    get: () => getPromise('./baza_pytan.json'),
+    post: data => getPromise('./test.json', data, 'post')
+  },
+  profile: {
+    get: () => getPromise('./profile.json'),
+    post: data => getPromise('./test.json', data, 'post')
   },
   image: {
-    post: data => getPromise({
-      method: 'post',
-      url: 'http://localhost:3000',
-      data
-    })
+    post: data => getPromise('http://localhost:3000', data, 'post')
   }
 }
 

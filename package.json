@@ -13,6 +13,7 @@
   "dependencies": {
     "angular": "^1.5.8",
     "angular-route": "^1.5.8",
+    "angular-translate": "^2.11.1",
     "axios": "^0.13.1",
     "webpack": "^1.13.2"
   },
