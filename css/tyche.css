@@ -2,6 +2,7 @@
 body {
     margin-top: 100px;
     background-color: #222;
+    /*overflow: hidden;*/
 }
 
 @media(min-width:768px) {
@@ -12,12 +13,15 @@ body {
 
 #wrapper {
     padding-left: 0;
+    height: 100%;
 }
 
 #page-wrapper {
     width: 100%;
     padding: 0;
     background-color: #fff;
+    overflow-y: scroll;
+    overflow-x: hidden;
 }
 
 .huge {
@@ -223,3 +227,22 @@ ul.alert-dropdown {
     height: 100%;
 }
 html,body { height:100%; }
+
+#pagination {
+  display: flex;
+  justify-content: center;
+  /*align-items: center;*/
+}
+
+.page {
+  text-align: center;
+  border: 1px solid black;
+  width: 35px;
+  height: 35px;
+  line-height: 35px;
+}
+
+.page:hover {
+  background-color: gray;
+  color: white;
+}

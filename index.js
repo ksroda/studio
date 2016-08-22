@@ -1,3 +1,4 @@
+import _ from 'lodash'
 import angular from 'angular'
 import angularRoute from 'angular-route'
 import angularTranslate from 'angular-translate'
@@ -31,9 +32,13 @@ angular.module('myApp', [angularRoute, angularTranslate])
           templateUrl : 'views/webcam.html',
           controller: 'webcam_controller'
       })
-      .when("/login", {
-        templateUrl : "login.html",
-        controller : "login_controller"
+      .when('/login', {
+        templateUrl : 'views/login.html',
+        controller : 'login_controller'
+      })
+      .when('/moje_pytania', {
+        templateUrl : 'views/moje_pytania.html',
+        controller : 'moje_pytania_controller'
       })
     })
 
@@ -54,6 +59,7 @@ angular.module('myApp', [angularRoute, angularTranslate])
     API.questions.get()
       .then(response => {
         $scope.$apply(function () {
+          // console.log(response)
           $scope.baza_pytan = response.data
         })
       })
@@ -112,45 +118,100 @@ angular.module('myApp', [angularRoute, angularTranslate])
           }
       }])
 
-      .directive("passwordVerify", function() {
-        return {
-          require: "ngModel",
-          scope: {
-            passwordVerify: '='
-          },
-                link: function(scope, element, attrs, ctrl) {
-                  scope.$watch(function() {
-                      var combined;
-                        if (scope.passwordVerify || ctrl.$viewValue) {
-                         combined = scope.passwordVerify + '_' + ctrl.$viewValue;
-                      }
-                      return combined;
-                  }, function(value) {
-                      if (value) {
-                          ctrl.$parsers.unshift(function(viewValue) {
-                              var origin = scope.passwordVerify;
-                              if (origin !== viewValue) {
-                                  ctrl.$setValidity("passwordVerify", false);
-                                  return undefined;
-                              } else {
-                                  ctrl.$setValidity("passwordVerify", true);
-                                  return viewValue;
-                              }
-                          });
-                      }
-                  });
-               }
-             };
-          })
-        .config(function($translateProvider) {
-              $translateProvider.translations('en', {
-                WELCOME: 'Welcome!',
-                MESSAGE: 'This app supports your lanaguage!'
+    .controller('moje_pytania_controller',
+      ['$scope', $scope => {
+        // API.questions.getByAuthor()
+        //   .then(response => {
+        //     $scope.$apply(function () {
+        //       $scope.baza_pytan = response.data.data
+        //       $scope.totalNumberOfEntries = response.data.totalNumberOfEntries
+        //       $scope.totalNumberOfPages = _
+        //         .range(1, Math.ceil(response.data.totalNumberOfEntries/25) + 1)
+        //     })
+        //   })
+        $scope.baza_pytan = []
+
+        $scope.turnPage = page => {
+
+          const cachedPages = $scope.baza_pytan.slice((page - 1) * 25, page * 25).filter(page => page !== null)
+          const cachedPagesLength = cachedPages.length
+
+          console.log(cachedPagesLength)
+
+          if (cachedPagesLength < 25) {
+            console.log('nowa strona')
+            API.questions.getByPage(page)
+              .then(response => {
+                const nowa_baza_pytan = _.range((page - 1) * 25).map((page, index) =>
+                  $scope.baza_pytan[index] || null
+                )
+
+                const super_nowa_baza_pytan = nowa_baza_pytan.concat(response.data.data).concat($scope.baza_pytan.slice((page + 1) * 25))
+                $scope.$apply(function () {
+                  $scope.baza_pytan = super_nowa_baza_pytan
+                  $scope.cachedPages = response.data.data
+                  $scope.totalNumberOfEntries = response.data.totalNumberOfEntries
+                  $scope.totalNumberOfPages = _
+                    .range(1, Math.ceil(response.data.totalNumberOfEntries/25) + 1)
+                })
+                console.log(super_nowa_baza_pytan)
               })
-              .translations('pl', {
-                WELCOME: 'Witamy!',
-                MESSAGE: 'Ta strona obsługuje twój język!'
-              });
-              $translateProvider.preferredLanguage('pl');
-              $translateProvider.useSanitizeValueStrategy('escapeParameters')
-          });
+          } else {
+            // $scope.$apply(function () {
+              $scope.cachedPages = cachedPages
+            // })
+          }
+
+
+        }
+
+
+
+        $scope.turnPage(1)
+      }]
+    )
+
+    .directive("passwordVerify", function() {
+      return {
+        require: "ngModel",
+        scope: {
+          passwordVerify: '='
+        },
+              link: function(scope, element, attrs, ctrl) {
+                scope.$watch(function() {
+                    var combined;
+                      if (scope.passwordVerify || ctrl.$viewValue) {
+                       combined = scope.passwordVerify + '_' + ctrl.$viewValue;
+                    }
+                    return combined;
+                }, function(value) {
+                    if (value) {
+                        ctrl.$parsers.unshift(function(viewValue) {
+                            var origin = scope.passwordVerify;
+                            if (origin !== viewValue) {
+                                ctrl.$setValidity("passwordVerify", false);
+                                return undefined;
+                            } else {
+                                ctrl.$setValidity("passwordVerify", true);
+                                return viewValue;
+                            }
+                        });
+                    }
+                });
+             }
+           };
+        })
+
+      .config(function($translateProvider) {
+            $translateProvider.translations('en', {
+              WELCOME: 'Welcome!',
+              MESSAGE: 'This app supports your lanaguage!'
+            })
+            .translations('pl', {
+              WELCOME: 'Witamy!',
+              MESSAGE: 'Ta strona obsługuje twój język!'
+            });
+            $translateProvider.preferredLanguage('pl');
+            $translateProvider.useSanitizeValueStrategy('escapeParameters')
+        }
+      )

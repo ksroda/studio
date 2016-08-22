@@ -1,0 +1,70 @@
+
+  <div class="container-fluid">
+            <!-- Page Heading -->
+            <div class="row">
+                <div class="col-lg-12">
+                    <h1 class="page-header">Baza pytań</h1>
+                </div>
+            </div>
+            <!-- /.row -->
+
+            <div class="row">
+                <div class="col-sm-12">
+                    <!-- <h2>Bordered Table</h2> -->
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Treść pytania</th>
+                                    <th>Dział</th>
+                                    <th>Autor</th>
+                                    <th>Data modyfikacji</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr ng-repeat="item in cachedPages | filter: search track by $index">
+                                  <td>pytanie {{ item.id }}</td>
+                                  <td>{{ item.subject }}</td>
+                                  <td>{{ item.author }}</td>
+                                  <td>{{ item.date }}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+
+
+                <div class="row">
+                    <div class="col-sm-3">
+                    </div>
+                    <div class="col-sm-6">
+                        <form role="form">
+                            <div class="form-group input-group">
+                            <input type="text" class="form-control" ng-model="search">
+                            <span class="input-group-btn"><button class="btn btn-default" type="button"><i class="fa fa-search"></i></button></span>
+                        </div>
+
+                    </form>
+                    </div>
+                    <div class="col-sm-3">
+                    </div>
+                </div>
+            </div>
+
+            <div id="pagination">
+              <div class="page" ng-repeat="page in totalNumberOfPages track by $index" ng-click="turnPage(page)">
+                {{ page }}
+              </div>
+            </div>
+            <!-- /.row -->
+
+
+
+        </div>
+        <!-- /.container-fluid -->
+
+    </div>
+    <!-- /#page-wrapper -->
+
+<!-- /#wrapper -->

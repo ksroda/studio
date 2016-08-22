@@ -9,6 +9,8 @@ const getPromise = (url, data, method) => axios({
 const api = {
   questions: {
     get: () => getPromise('./baza_pytan.json'),
+    getByAuthor: () => getPromise('./baza_pytan_kasia.json'), // mock
+    getByPage: page => getPromise(`./baza_pytan_${page}.json`), // mock
     post: data => getPromise('./test.json', data, 'post')
   },
   profile: {
