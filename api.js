@@ -7,6 +7,9 @@ const getPromise = (url, data, method) => axios({
 }).catch(error => console.error(error))
 
 const api = {
+  login: {
+    post: data => getPromise('http://localhost:3000/logowanie', data, 'post')
+  },
   questions: {
     get: () => getPromise('./baza_pytan.json'),
     getByAuthor: () => getPromise('./baza_pytan_kasia.json'), // mock

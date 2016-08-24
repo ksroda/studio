@@ -42,6 +42,54 @@ angular.module('myApp', [angularRoute, angularTranslate])
       })
     })
 
+  .factory('authService', function($location) {
+
+    const checkStorage = storage => {
+      const login = storage.getItem('studioLogin')
+      const token = storage.getItem('studioToken')
+
+      return new Promise((resolve, reject) => {
+        if (login && token) {
+          API.auth.post({ login, token })
+            .then(resolve)
+            .catch(reject)
+        } else {
+          reject()
+        }
+      })
+    }
+
+    const authorization = () => {
+      checkStorage(sessionStorage)
+        .catch(error => {
+          checkStorage(localStorage)
+            .catch(error => {
+              $location.path('/login').replace()
+            })
+        })
+    }
+
+    const authentication = (login, password, rememberMe, callback) => {
+      API.login.post({ login, password })
+        .then(response => {
+          $location.path(reponse.data.connect ? '/' : '/login').replace()
+          const storage = rememberMe ? localStorage : sessionStorage
+          storage.setItem('studioLogin', login)
+          storage.setItem('studioToken', reponse.data.token)
+          callback('')
+        })
+        .catch(error => {
+          $location.path('/login').replace()
+          callback('Login lub hasło są nieprawidłowe')
+        })
+    }
+
+    return {
+      authorization,
+      authentication
+    }
+  })
+
   .controller('myCtrl', ['$scope', '$translate', function ($scope, $translate) {
     $scope.visibleMenu = true
     $scope.language = 'pl'
@@ -51,19 +99,37 @@ angular.module('myApp', [angularRoute, angularTranslate])
     }
   }])
 
-  .controller('login_controller', ['$scope', ($scope) => {
-    $scope.visibleMenu = false
-  }])
+  .controller('login_controller', ['$scope', 'authService',
+    ($scope, authService) => {
+      $scope.visibleMenu = false
+      $scope.login = () => {
+        authService.authentication(
+          $scope.username,
+          $scope.password,
+          $scope.rememberMe,
+          error => {
+            $scope.$apply(function () {
+              $scope.error = error
+            })
+          }
+        )
+      }
 
-  .controller('baza_pytan_controller', ['$scope', $scope => {
-    API.questions.get()
-      .then(response => {
-        $scope.$apply(function () {
-          // console.log(response)
-          $scope.baza_pytan = response.data
+    }
+  ])
+
+  .controller('baza_pytan_controller', ['$scope', 'authService',
+    ($scope, authService) => {
+      authService.authorization()
+      API.questions.get()
+        .then(response => {
+          $scope.$apply(function () {
+            // console.log(response)
+            $scope.baza_pytan = response.data
+          })
         })
-      })
-    }])
+    }
+  ])
 
   .controller('webcam_controller', ['$scope', $scope => {
     const video = runCamera()
@@ -120,15 +186,6 @@ angular.module('myApp', [angularRoute, angularTranslate])
 
     .controller('moje_pytania_controller',
       ['$scope', $scope => {
-        // API.questions.getByAuthor()
-        //   .then(response => {
-        //     $scope.$apply(function () {
-        //       $scope.baza_pytan = response.data.data
-        //       $scope.totalNumberOfEntries = response.data.totalNumberOfEntries
-        //       $scope.totalNumberOfPages = _
-        //         .range(1, Math.ceil(response.data.totalNumberOfEntries/25) + 1)
-        //     })
-        //   })
         $scope.baza_pytan = []
 
         $scope.turnPage = page => {
@@ -161,12 +218,7 @@ angular.module('myApp', [angularRoute, angularTranslate])
               $scope.cachedPages = cachedPages
             // })
           }
-
-
         }
-
-
-
         $scope.turnPage(1)
       }]
     )
