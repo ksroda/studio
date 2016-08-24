@@ -118,11 +118,12 @@
 	  };
 
 	  var authentication = function authentication(login, password, rememberMe, callback) {
-	    _api2.default.login.post({ login: login, password: password }).then(function (response) {
-	      $location.path(reponse.data.connect ? '/' : '/login').replace();
+	    _api2.default.login.post({ 'Email': '', 'Login': login, 'Password': password }).then(function (response) {
+	      console.log(response);
+	      $location.path(response.data ? '/' : '/login').replace();
 	      var storage = rememberMe ? localStorage : sessionStorage;
 	      storage.setItem('studioLogin', login);
-	      storage.setItem('studioToken', reponse.data.token);
+	      storage.setItem('studioToken', response.data);
 	      callback('');
 	    }).catch(function (error) {
 	      $location.path('/login').replace();
@@ -151,7 +152,7 @@
 	    });
 	  };
 	}]).controller('baza_pytan_controller', ['$scope', 'authService', function ($scope, authService) {
-	  authService.authorization();
+	  // authService.authorization()
 	  _api2.default.questions.get().then(function (response) {
 	    $scope.$apply(function () {
 	      // console.log(response)
@@ -207,26 +208,30 @@
 
 	  $scope.turnPage = function (page) {
 
-	    var cachedPages = $scope.baza_pytan.slice((page - 1) * 25, page * 25).filter(function (page) {
+	    var numberOfEntriesOnPage = 50;
+
+	    var cachedPages = $scope.baza_pytan.slice((page - 1) * numberOfEntriesOnPage, page * numberOfEntriesOnPage).filter(function (page) {
 	      return page !== null;
 	    });
 	    var cachedPagesLength = cachedPages.length;
 
-	    console.log(cachedPagesLength);
+	    console.log(page, $scope.totalNumberOfPages);
 
-	    if (cachedPagesLength < 25) {
+	    if (cachedPagesLength === 0 || cachedPagesLength < numberOfEntriesOnPage && page !== $scope.totalNumberOfPages) {
 	      console.log('nowa strona');
-	      _api2.default.questions.getByPage(page).then(function (response) {
-	        var nowa_baza_pytan = _lodash2.default.range((page - 1) * 25).map(function (page, index) {
+	      _api2.default.questions.getByPage({ page: page, numberOfEntriesOnPage: numberOfEntriesOnPage }).then(function (response) {
+	        var nowa_baza_pytan = _lodash2.default.range((page - 1) * numberOfEntriesOnPage).map(function (page, index) {
 	          return $scope.baza_pytan[index] || null;
 	        });
 
-	        var super_nowa_baza_pytan = nowa_baza_pytan.concat(response.data.data).concat($scope.baza_pytan.slice((page + 1) * 25));
+	        var super_nowa_baza_pytan = nowa_baza_pytan.concat(response.data.data).concat($scope.baza_pytan.slice((page + 1) * numberOfEntriesOnPage));
 	        $scope.$apply(function () {
 	          $scope.baza_pytan = super_nowa_baza_pytan;
 	          $scope.cachedPages = response.data.data;
 	          $scope.totalNumberOfEntries = response.data.totalNumberOfEntries;
-	          $scope.totalNumberOfPages = _lodash2.default.range(1, Math.ceil(response.data.totalNumberOfEntries / 25) + 1);
+	          var allPages = _lodash2.default.range(1, Math.ceil(response.data.totalNumberOfEntries / numberOfEntriesOnPage) + 1);
+	          $scope.allPages = allPages;
+	          $scope.totalNumberOfPages = _lodash2.default.max(allPages);
 	        });
 	        console.log(super_nowa_baza_pytan);
 	      });
@@ -53386,26 +53391,33 @@
 	  value: true
 	});
 
-	var _axios = __webpack_require__(9);
+	var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
-	var _axios2 = _interopRequireDefault(_axios);
+	var _axios2 = __webpack_require__(9);
+
+	var _axios3 = _interopRequireDefault(_axios2);
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
+	function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+	var protocol = 'http';
+	var host = 'localhost';
+	var port = '3000';
+
 	var getPromise = function getPromise(url, data, method) {
-	  return (0, _axios2.default)({
+	  return (0, _axios3.default)(_defineProperty({
 	    method: method || 'get',
-	    url: url,
-	    data: data
-	  }).catch(function (error) {
-	    return console.error(error);
-	  });
+	    url: url
+	  }, method === 'post' ? 'data' : 'params', _extends({}, data, {
+	    token: sessionStorage.getItem('studioToken')
+	  })));
 	};
 
 	var api = {
 	  login: {
 	    post: function post(data) {
-	      return getPromise('http://localhost:3000/logowanie', data, 'post');
+	      return getPromise(protocol + '://' + host + ':' + port + '/auth', data, 'post');
 	    }
 	  },
 	  questions: {
@@ -53415,8 +53427,8 @@
 	    getByAuthor: function getByAuthor() {
 	      return getPromise('./baza_pytan_kasia.json');
 	    }, // mock
-	    getByPage: function getByPage(page) {
-	      return getPromise('./baza_pytan_' + page + '.json');
+	    getByPage: function getByPage(data) {
+	      return getPromise(protocol + '://' + host + ':' + port + '/baza_pytan', data);
 	    }, // mock
 	    post: function post(data) {
 	      return getPromise('./test.json', data, 'post');

@@ -70,12 +70,13 @@ angular.module('myApp', [angularRoute, angularTranslate])
     }
 
     const authentication = (login, password, rememberMe, callback) => {
-      API.login.post({ login, password })
+      API.login.post({ 'Email': '', 'Login': login, 'Password': password })
         .then(response => {
-          $location.path(reponse.data.connect ? '/' : '/login').replace()
+          console.log(response)
+          $location.path(response.data ? '/' : '/login').replace()
           const storage = rememberMe ? localStorage : sessionStorage
           storage.setItem('studioLogin', login)
-          storage.setItem('studioToken', reponse.data.token)
+          storage.setItem('studioToken', response.data)
           callback('')
         })
         .catch(error => {
@@ -120,7 +121,7 @@ angular.module('myApp', [angularRoute, angularTranslate])
 
   .controller('baza_pytan_controller', ['$scope', 'authService',
     ($scope, authService) => {
-      authService.authorization()
+      // authService.authorization()
       API.questions.get()
         .then(response => {
           $scope.$apply(function () {
@@ -190,26 +191,33 @@ angular.module('myApp', [angularRoute, angularTranslate])
 
         $scope.turnPage = page => {
 
-          const cachedPages = $scope.baza_pytan.slice((page - 1) * 25, page * 25).filter(page => page !== null)
+          const numberOfEntriesOnPage = 50
+
+          const cachedPages = $scope.baza_pytan.slice(
+            (page - 1) * numberOfEntriesOnPage,
+            page * numberOfEntriesOnPage
+          ).filter(page => page !== null)
           const cachedPagesLength = cachedPages.length
 
-          console.log(cachedPagesLength)
+          console.log(page, $scope.totalNumberOfPages)
 
-          if (cachedPagesLength < 25) {
+          if (cachedPagesLength === 0 || cachedPagesLength < numberOfEntriesOnPage && page !== $scope.totalNumberOfPages) {
             console.log('nowa strona')
-            API.questions.getByPage(page)
+            API.questions.getByPage({ page, numberOfEntriesOnPage })
               .then(response => {
-                const nowa_baza_pytan = _.range((page - 1) * 25).map((page, index) =>
+                const nowa_baza_pytan = _.range((page - 1) * numberOfEntriesOnPage).map((page, index) =>
                   $scope.baza_pytan[index] || null
                 )
 
-                const super_nowa_baza_pytan = nowa_baza_pytan.concat(response.data.data).concat($scope.baza_pytan.slice((page + 1) * 25))
+                const super_nowa_baza_pytan = nowa_baza_pytan.concat(response.data.data).concat($scope.baza_pytan.slice((page + 1) * numberOfEntriesOnPage))
                 $scope.$apply(function () {
                   $scope.baza_pytan = super_nowa_baza_pytan
                   $scope.cachedPages = response.data.data
                   $scope.totalNumberOfEntries = response.data.totalNumberOfEntries
-                  $scope.totalNumberOfPages = _
-                    .range(1, Math.ceil(response.data.totalNumberOfEntries/25) + 1)
+                  const allPages = _
+                    .range(1, Math.ceil(response.data.totalNumberOfEntries/numberOfEntriesOnPage) + 1)
+                  $scope.allPages = allPages
+                  $scope.totalNumberOfPages = _.max(allPages)
                 })
                 console.log(super_nowa_baza_pytan)
               })
