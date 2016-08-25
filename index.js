@@ -2,12 +2,13 @@ import _ from 'lodash'
 import angular from 'angular'
 import angularRoute from 'angular-route'
 import angularTranslate from 'angular-translate'
+import angularContenteditable from 'angular-contenteditable'
 
 import API from './api'
 
 import { runCamera, stopCamera, captureImage } from './camera'
 
-angular.module('myApp', [angularRoute, angularTranslate])
+angular.module('myApp', [angularRoute, angularTranslate, angularContenteditable])
   .config(function($routeProvider) {
     $routeProvider
       .when("/", {
@@ -98,6 +99,56 @@ angular.module('myApp', [angularRoute, angularTranslate])
     $scope.updateLanguage = () => {
       $translate.use($scope.language)
     }
+
+    $scope.menuTree = [
+      {
+        name: 'Strona główna',
+        path: '#/',
+        icon: 'fa-home',
+        active: true
+      },
+      {
+        name: 'Baza pytań',
+        target: 'baza',
+        submenu: [
+          {
+            name: 'Przeglądaj bazę pytań',
+            path: '#/baza_pytan'
+          },
+          {
+            name: 'Przeglądaj swoje pytania',
+            path: '#/moje_pytania'
+          },
+          {
+            name: 'Dodaj pytanie',
+            path: '#/dodaj_pytanie'
+          }
+        ]
+      },
+      {
+        name: 'Egzamin',
+        target: 'egzamin',
+        submenu: [
+          {
+            name: 'Aktualny egzamin',
+            path: '#/aktualne_pytania'
+          },
+          {
+            name: 'Generuj nowy egzamin',
+            path: '#/generuj_egzamin'
+          },
+          {
+            name: 'Generuj raporty',
+            path: '#/generuj_raporty'
+          }
+        ]
+      },
+      {
+        name: 'Webcam',
+        icon: 'fa-video-camera',
+        path: '#/webcam'
+      }
+    ]
   }])
 
   .controller('login_controller', ['$scope', 'authService',
@@ -188,10 +239,29 @@ angular.module('myApp', [angularRoute, angularTranslate])
     .controller('moje_pytania_controller',
       ['$scope', $scope => {
         $scope.baza_pytan = []
+        $scope.numberOfEntriesOnPage = 25
 
-        $scope.turnPage = page => {
+        $scope.resetCachedPages = () => {
+          $scope.baza_pytan = []
+          $scope.turnPage(1)
+        }
 
-          const numberOfEntriesOnPage = 50
+        $scope.alert = (data) => {
+          alert(JSON.stringify(data))
+        }
+
+        $scope.fetchQuestion = (id) => {
+          API.questions.get({ id })
+            .then(response => {
+              $scope.$apply(function () {
+                $scope.questiontToEdit = response.data
+              })
+            })
+        }
+
+        $scope.turnPage = (page) => {
+
+          const numberOfEntriesOnPage = $scope.numberOfEntriesOnPage
 
           const cachedPages = $scope.baza_pytan.slice(
             (page - 1) * numberOfEntriesOnPage,
@@ -232,6 +302,7 @@ angular.module('myApp', [angularRoute, angularTranslate])
     )
 
     .directive("passwordVerify", function() {
+      // czajnik
       return {
         require: "ngModel",
         scope: {

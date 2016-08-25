@@ -2,11 +2,17 @@ var express = require('express');
 var router = express.Router();
 var _ = require('lodash');
 
-const token = '8ob86V8686o86oBkuybuyiHIYILBO88O6V8b8yhkuybiuykuyYVKUYVYBL8YB8HKUhb8y8KHJKU8I8IHHOih'
 const baza_pytan_pattern = {
   subject: 'Systemy operacyjne',
   author: 'Kasia Nowak',
-  date: '21-02-2015'
+  date: '21-02-2015',
+  question: 'To jest treść pytania',
+  answers: {
+    a: 'Odpowiedz A',
+    b: 'Odpowiedz B',
+    c: 'Odpowiedz C',
+    d: 'Odpowiedz D'
+  }
 }
 
 const baza_pytan_data = _.range(1, 401).reduce((acc, id) => [
@@ -15,7 +21,7 @@ const baza_pytan_data = _.range(1, 401).reduce((acc, id) => [
 ], [])
 
 /* GET home page. */
-router.post('/auth', function(req, res, next) {
+router.post('/auth', function (req, res, next) {
   const { Login: login, Password: password } = req.body
   console.log(req.body)
   if (login === 'jan' && password === 'mak') {
@@ -25,9 +31,10 @@ router.post('/auth', function(req, res, next) {
   }
 })
 
-router.get('/baza_pytan', function(req, res, next) {
-  const { page, numberOfEntriesOnPage, token: tokenClient } = req.query
-  if (!!page && !!numberOfEntriesOnPage && token === tokenClient) {
+router.get('/baza_pytan', function (req, res, next) {
+  console.log('jestem tu')
+  const { page, numberOfEntriesOnPage } = req.query
+  if (!!page && !!numberOfEntriesOnPage) {
     res.json({
       totalNumberOfEntries: baza_pytan_data.length,
       data: baza_pytan_data.slice(
@@ -38,6 +45,12 @@ router.get('/baza_pytan', function(req, res, next) {
   } else {
     res.status(401).send('Unauthorized')
   }
+})
+
+router.get('/question/:id', function (req, res, next) {
+  const id = parseInt(req.params.id)
+  const question = _.find(baza_pytan_data, question => question.id === id)
+  res.json(question)
 })
 
 module.exports = router;

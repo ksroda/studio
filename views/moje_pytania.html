@@ -19,6 +19,7 @@
                                     <th>Dział</th>
                                     <th>Autor</th>
                                     <th>Data modyfikacji</th>
+                                    <th></th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -27,12 +28,51 @@
                                   <td>{{ item.subject }}</td>
                                   <td>{{ item.author }}</td>
                                   <td>{{ item.date }}</td>
+                                  <td>
+                                    <button
+                                      type="button"
+                                      class="btn btn-primary btn-sm"
+                                      data-toggle="modal"
+                                      data-target="#myModal"
+                                      ng-click="fetchQuestion(item.id)"
+                                    >
+                                      Details
+                                    </button>
+                                  </td>
                                 </tr>
                             </tbody>
                         </table>
                     </div>
                 </div>
 
+                <div id="myModal" class="modal fade" role="dialog">
+                  <div class="modal-dialog">
+
+                    <!-- Modal content-->
+                    <div class="modal-content">
+                      <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                        <h4 class="modal-title">Modal Header</h4>
+                      </div>
+                      <div class="modal-body">
+
+                        <!-- {{ questiontToEdit.question }} -->
+                        <span contenteditable="true"
+                          ng-model="questiontToEdit.question"
+                          strip-br="true"
+                          strip-tags="true"
+                          select-non-editable="true">
+                        </span>
+
+                      </div>
+                      <div class="modal-footer">
+                        <button type="button" class="btn btn-default" ng-click="alert(questiontToEdit)" data-dismiss="modal">Send</button>
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                      </div>
+                    </div>
+
+                  </div>
+                </div>
 
 
                 <div class="row">
@@ -56,6 +96,11 @@
               <div class="page" ng-repeat="page in allPages track by $index" ng-click="turnPage(page)">
                 {{ page }}
               </div>
+            </div>
+            <div>
+              <select ng-init="numberOfEntriesOnPage = '25'" ng-model="numberOfEntriesOnPage" ng-change="resetCachedPages()">
+                <option ng-repeat="number in ['25', '50', '100']">{{ number }}</option>
+              </select>
             </div>
             <!-- /.row -->
 

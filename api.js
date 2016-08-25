@@ -4,23 +4,25 @@ const protocol = 'http'
 const host = 'localhost'
 const port = '3000'
 
+const baseURL = `${protocol}://${host}:${port}`
+
 const getPromise = (url, data, method) => axios({
   method: method || 'get',
   url,
   [method === 'post' ? 'data' : 'params']: {
     ...data,
-    token: sessionStorage.getItem('studioToken')
+    token: sessionStorage.getItem('studioToken') || localStorage.getItem('studioToken')
   }
 })
 
 const api = {
   login: {
-    post: data => getPromise(`${protocol}://${host}:${port}/auth`, data, 'post')
+    post: data => getPromise(`${baseURL}/auth`, data, 'post')
   },
   questions: {
-    get: () => getPromise('./baza_pytan.json'),
+    get: data => getPromise(`${baseURL}/question/${data.id}`),
     getByAuthor: () => getPromise('./baza_pytan_kasia.json'), // mock
-    getByPage: data => getPromise(`${protocol}://${host}:${port}/baza_pytan`, data), // mock
+    getByPage: data => getPromise(`${baseURL}/baza_pytan`, data), // mock
     post: data => getPromise('./test.json', data, 'post')
   },
   profile: {

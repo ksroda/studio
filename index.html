@@ -68,47 +68,23 @@
 
 
             <!-- Sidebar Menu Items - These collapse to the responsive navigation menu on small screens -->
-            <div class="collapse navbar-collapse navbar-ex1-collapse" ng-show="visibleMenu">
-                <ul class="nav navbar-nav side-nav">
-                    <li class="active">
-                        <a href="#/"><i class="fa fa-fw fa-home"></i> Strona główna</a>
-                    </li>
-                    <li>
-                        <a href="javascript:;" data-toggle="collapse" data-target="#baza"><i class="fa fa-fw fa-caret-down"></i> Baza pytań </a>
-                        <ul id="baza" class="collapse">
-                            <li>
-                                <a href="#/baza_pytan">Przeglądaj bazę pytań</a>
-                            </li>
-                            <li>
-                                <a href="#/moje_pytania">Przeglądaj swoje pytania</a>
-                            </li>
-                            <li>
-                                <a href="#/dodaj_pytanie">Dodaj pytanie</a>
-                            </li>
-                        </ul>
-                    </li>
-                    <li>
-                        <a href="javascript:;" data-toggle="collapse" data-target="#egzamin"><i class="fa fa-fw fa-caret-down"></i> Egzamin </a>
-                        <ul id="egzamin" class="collapse">
-                            <li>
-                                <a href="#/aktualne_pytania">Aktualny egzamin</a>
-                            </li>
-                            <li>
-                                <a href="generuj_nowy_egzamin.html">Generuj nowy egzamin</a>
-                            </li>
-                            <li>
-                                <a href="#">Generuj raporty</a>
-                            </li>
-                        </ul>
-                    </li>
-                    <li>
-                        <a href="#/webcam"><i class="fa fa-fw fa-video-camera"></i> Webcam</a>
-                    </li>
-                    <li>
-                        <a href="#"><i class="fa fa-fw fa-power-off"></i> Wyloguj</a>
-                    </li>
-                </ul>
-            </div>
+<div class="collapse navbar-collapse navbar-ex1-collapse" ng-show="visibleMenu">
+  <ul class="nav navbar-nav side-nav">
+    <li ng-repeat="item in menuTree" ng-class="{ active: item.active }">
+      <a href="#/" ng-if="!item.submenu">
+        <i ng-if="item.icon" class="fa fa-fw {{ item.icon }}"></i>
+        {{ item.name }}
+      </a>
+      <a href="javascript:;" ng-if="item.submenu" data-toggle="collapse" data-target="#{{ item.target }}"><i class="fa fa-fw fa-caret-down"></i>{{ item.name }}</a>
+      <ul id="{{ item.target }}" ng-if="item.submenu" class="collapse">
+        <li ng-repeat="subItem in item.submenu">
+          <a href="{{ subItem.path }}">{{ subItem.name }}</a>
+        </li>
+      </ul>
+    </li>
+  </ul>
+</div>
+
             <!-- /.navbar-collapse -->
         </nav>
 

@@ -62,15 +62,19 @@
 
 	var _angularTranslate2 = _interopRequireDefault(_angularTranslate);
 
-	var _api = __webpack_require__(8);
+	var _angularContenteditable = __webpack_require__(8);
+
+	var _angularContenteditable2 = _interopRequireDefault(_angularContenteditable);
+
+	var _api = __webpack_require__(10);
 
 	var _api2 = _interopRequireDefault(_api);
 
-	var _camera = __webpack_require__(32);
+	var _camera = __webpack_require__(34);
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-	_angular2.default.module('myApp', [_angularRoute2.default, _angularTranslate2.default]).config(function ($routeProvider) {
+	_angular2.default.module('myApp', [_angularRoute2.default, _angularTranslate2.default, _angularContenteditable2.default]).config(function ($routeProvider) {
 	  $routeProvider.when("/", {
 	    templateUrl: 'views/about.html'
 	  }).when('/baza_pytan', {
@@ -142,6 +146,43 @@
 	  $scope.updateLanguage = function () {
 	    $translate.use($scope.language);
 	  };
+
+	  $scope.menuTree = [{
+	    name: 'Strona główna',
+	    path: '#/',
+	    icon: 'fa-home',
+	    active: true
+	  }, {
+	    name: 'Baza pytań',
+	    target: 'baza',
+	    submenu: [{
+	      name: 'Przeglądaj bazę pytań',
+	      path: '#/baza_pytan'
+	    }, {
+	      name: 'Przeglądaj swoje pytania',
+	      path: '#/moje_pytania'
+	    }, {
+	      name: 'Dodaj pytanie',
+	      path: '#/dodaj_pytanie'
+	    }]
+	  }, {
+	    name: 'Egzamin',
+	    target: 'egzamin',
+	    submenu: [{
+	      name: 'Aktualny egzamin',
+	      path: '#/aktualne_pytania'
+	    }, {
+	      name: 'Generuj nowy egzamin',
+	      path: '#/generuj_egzamin'
+	    }, {
+	      name: 'Generuj raporty',
+	      path: '#/generuj_raporty'
+	    }]
+	  }, {
+	    name: 'Webcam',
+	    icon: 'fa-video-camera',
+	    path: '#/webcam'
+	  }];
 	}]).controller('login_controller', ['$scope', 'authService', function ($scope, authService) {
 	  $scope.visibleMenu = false;
 	  $scope.login = function () {
@@ -205,10 +246,28 @@
 	  };
 	}]).controller('moje_pytania_controller', ['$scope', function ($scope) {
 	  $scope.baza_pytan = [];
+	  $scope.numberOfEntriesOnPage = 25;
+
+	  $scope.resetCachedPages = function () {
+	    $scope.baza_pytan = [];
+	    $scope.turnPage(1);
+	  };
+
+	  $scope.alert = function (data) {
+	    alert(JSON.stringify(data));
+	  };
+
+	  $scope.fetchQuestion = function (id) {
+	    _api2.default.questions.get({ id: id }).then(function (response) {
+	      $scope.$apply(function () {
+	        $scope.questiontToEdit = response.data;
+	      });
+	    });
+	  };
 
 	  $scope.turnPage = function (page) {
 
-	    var numberOfEntriesOnPage = 50;
+	    var numberOfEntriesOnPage = $scope.numberOfEntriesOnPage;
 
 	    var cachedPages = $scope.baza_pytan.slice((page - 1) * numberOfEntriesOnPage, page * numberOfEntriesOnPage).filter(function (page) {
 	      return page !== null;
@@ -243,6 +302,7 @@
 	  };
 	  $scope.turnPage(1);
 	}]).directive("passwordVerify", function () {
+	  // czajnik
 	  return {
 	    require: "ngModel",
 	    scope: {
@@ -53385,6 +53445,132 @@
 /* 8 */
 /***/ function(module, exports, __webpack_require__) {
 
+	__webpack_require__(9);
+	module.exports = 'contenteditable';
+
+
+
+/***/ },
+/* 9 */
+/***/ function(module, exports) {
+
+	/**
+	 * @see http://docs.angularjs.org/guide/concepts
+	 * @see http://docs.angularjs.org/api/ng.directive:ngModel.NgModelController
+	 * @see https://github.com/angular/angular.js/issues/528#issuecomment-7573166
+	 */
+	(function(window, angular, undefined) {'use strict';
+
+	angular.module('contenteditable', [])
+	  .directive('contenteditable', ['$timeout', function($timeout) { return {
+	    restrict: 'A',
+	    require: '?ngModel',
+	    link: function(scope, element, attrs, ngModel) {
+	      // don't do anything unless this is actually bound to a model
+	      if (!ngModel) {
+	        return
+	      }
+
+	      // options
+	      var opts = {}
+	      angular.forEach([
+	        'stripBr',
+	        'noLineBreaks',
+	        'selectNonEditable',
+	        'moveCaretToEndOnChange',
+	        'stripTags'
+	      ], function(opt) {
+	        var o = attrs[opt]
+	        opts[opt] = o && o !== 'false'
+	      })
+
+	      // view -> model
+	      element.bind('input', function(e) {
+	        scope.$apply(function() {
+	          var html, html2, rerender
+	          html = element.html()
+	          rerender = false
+	          if (opts.stripBr) {
+	            html = html.replace(/<br>$/, '')
+	          }
+	          if (opts.noLineBreaks) {
+	            html2 = html.replace(/<div>/g, '').replace(/<br>/g, '').replace(/<\/div>/g, '')
+	            if (html2 !== html) {
+	              rerender = true
+	              html = html2
+	            }
+	          }
+	          if (opts.stripTags) {
+	            rerender = true
+	            html = html.replace(/<\S[^><]*>/g, '')
+	          }
+	          ngModel.$setViewValue(html)
+	          if (rerender) {
+	            ngModel.$render()
+	          }
+	          if (html === '') {
+	            // the cursor disappears if the contents is empty
+	            // so we need to refocus
+	            $timeout(function(){
+	              element[0].blur()
+	              element[0].focus()
+	            })
+	          }
+	        })
+	      })
+
+	      // model -> view
+	      var oldRender = ngModel.$render
+	      ngModel.$render = function() {
+	        var el, el2, range, sel
+	        if (!!oldRender) {
+	          oldRender()
+	        }
+	        var html = ngModel.$viewValue || ''
+	        if (opts.stripTags) {
+	          html = html.replace(/<\S[^><]*>/g, '')
+	        }
+
+	        element.html(html)
+	        if (opts.moveCaretToEndOnChange) {
+	          el = element[0]
+	          range = document.createRange()
+	          sel = window.getSelection()
+	          if (el.childNodes.length > 0) {
+	            el2 = el.childNodes[el.childNodes.length - 1]
+	            range.setStartAfter(el2)
+	          } else {
+	            range.setStartAfter(el)
+	          }
+	          range.collapse(true)
+	          sel.removeAllRanges()
+	          sel.addRange(range)
+	        }
+	      }
+	      if (opts.selectNonEditable) {
+	        element.bind('click', function(e) {
+	          var range, sel, target
+	          target = e.toElement
+	          if (target !== this && angular.element(target).attr('contenteditable') === 'false') {
+	            range = document.createRange()
+	            sel = window.getSelection()
+	            range.setStartBefore(target)
+	            range.setEndAfter(target)
+	            sel.removeAllRanges()
+	            sel.addRange(range)
+	          }
+	        })
+	      }
+	    }
+	  }}]);
+
+	}(window, window.angular));
+
+
+/***/ },
+/* 10 */
+/***/ function(module, exports, __webpack_require__) {
+
 	'use strict';
 
 	Object.defineProperty(exports, "__esModule", {
@@ -53393,7 +53579,7 @@
 
 	var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
-	var _axios2 = __webpack_require__(9);
+	var _axios2 = __webpack_require__(11);
 
 	var _axios3 = _interopRequireDefault(_axios2);
 
@@ -53405,30 +53591,32 @@
 	var host = 'localhost';
 	var port = '3000';
 
+	var baseURL = protocol + '://' + host + ':' + port;
+
 	var getPromise = function getPromise(url, data, method) {
 	  return (0, _axios3.default)(_defineProperty({
 	    method: method || 'get',
 	    url: url
 	  }, method === 'post' ? 'data' : 'params', _extends({}, data, {
-	    token: sessionStorage.getItem('studioToken')
+	    token: sessionStorage.getItem('studioToken') || localStorage.getItem('studioToken')
 	  })));
 	};
 
 	var api = {
 	  login: {
 	    post: function post(data) {
-	      return getPromise(protocol + '://' + host + ':' + port + '/auth', data, 'post');
+	      return getPromise(baseURL + '/auth', data, 'post');
 	    }
 	  },
 	  questions: {
-	    get: function get() {
-	      return getPromise('./baza_pytan.json');
+	    get: function get(data) {
+	      return getPromise(baseURL + '/question/' + data.id);
 	    },
 	    getByAuthor: function getByAuthor() {
 	      return getPromise('./baza_pytan_kasia.json');
 	    }, // mock
 	    getByPage: function getByPage(data) {
-	      return getPromise(protocol + '://' + host + ':' + port + '/baza_pytan', data);
+	      return getPromise(baseURL + '/baza_pytan', data);
 	    }, // mock
 	    post: function post(data) {
 	      return getPromise('./test.json', data, 'post');
@@ -53452,20 +53640,20 @@
 	exports.default = api;
 
 /***/ },
-/* 9 */
+/* 11 */
 /***/ function(module, exports, __webpack_require__) {
 
-	module.exports = __webpack_require__(10);
+	module.exports = __webpack_require__(12);
 
 /***/ },
-/* 10 */
+/* 12 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var utils = __webpack_require__(11);
-	var bind = __webpack_require__(12);
-	var Axios = __webpack_require__(13);
+	var utils = __webpack_require__(13);
+	var bind = __webpack_require__(14);
+	var Axios = __webpack_require__(15);
 
 	/**
 	 * Create an instance of Axios
@@ -53501,16 +53689,16 @@
 	axios.all = function all(promises) {
 	  return Promise.all(promises);
 	};
-	axios.spread = __webpack_require__(31);
+	axios.spread = __webpack_require__(33);
 
 
 /***/ },
-/* 11 */
+/* 13 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var bind = __webpack_require__(12);
+	var bind = __webpack_require__(14);
 
 	/*global toString:true*/
 
@@ -53810,7 +53998,7 @@
 
 
 /***/ },
-/* 12 */
+/* 14 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -53827,17 +54015,17 @@
 
 
 /***/ },
-/* 13 */
+/* 15 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var defaults = __webpack_require__(14);
-	var utils = __webpack_require__(11);
-	var InterceptorManager = __webpack_require__(16);
-	var dispatchRequest = __webpack_require__(17);
-	var isAbsoluteURL = __webpack_require__(29);
-	var combineURLs = __webpack_require__(30);
+	var defaults = __webpack_require__(16);
+	var utils = __webpack_require__(13);
+	var InterceptorManager = __webpack_require__(18);
+	var dispatchRequest = __webpack_require__(19);
+	var isAbsoluteURL = __webpack_require__(31);
+	var combineURLs = __webpack_require__(32);
 
 	/**
 	 * Create a new instance of Axios
@@ -53918,13 +54106,13 @@
 
 
 /***/ },
-/* 14 */
+/* 16 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var utils = __webpack_require__(11);
-	var normalizeHeaderName = __webpack_require__(15);
+	var utils = __webpack_require__(13);
+	var normalizeHeaderName = __webpack_require__(17);
 
 	var PROTECTION_PREFIX = /^\)\]\}',?\n/;
 	var DEFAULT_CONTENT_TYPE = {
@@ -53996,12 +54184,12 @@
 
 
 /***/ },
-/* 15 */
+/* 17 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var utils = __webpack_require__(11);
+	var utils = __webpack_require__(13);
 
 	module.exports = function normalizeHeaderName(headers, normalizedName) {
 	  utils.forEach(headers, function processHeader(value, name) {
@@ -54014,12 +54202,12 @@
 
 
 /***/ },
-/* 16 */
+/* 18 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var utils = __webpack_require__(11);
+	var utils = __webpack_require__(13);
 
 	function InterceptorManager() {
 	  this.handlers = [];
@@ -54072,13 +54260,13 @@
 
 
 /***/ },
-/* 17 */
+/* 19 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {'use strict';
 
-	var utils = __webpack_require__(11);
-	var transformData = __webpack_require__(19);
+	var utils = __webpack_require__(13);
+	var transformData = __webpack_require__(21);
 
 	/**
 	 * Dispatch a request to the server using whichever adapter
@@ -54119,10 +54307,10 @@
 	    adapter = config.adapter;
 	  } else if (typeof XMLHttpRequest !== 'undefined') {
 	    // For browsers use XHR adapter
-	    adapter = __webpack_require__(20);
+	    adapter = __webpack_require__(22);
 	  } else if (typeof process !== 'undefined') {
 	    // For node use HTTP adapter
-	    adapter = __webpack_require__(20);
+	    adapter = __webpack_require__(22);
 	  }
 
 	  return Promise.resolve(config)
@@ -54151,10 +54339,10 @@
 	    });
 	};
 
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(18)))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(20)))
 
 /***/ },
-/* 18 */
+/* 20 */
 /***/ function(module, exports) {
 
 	// shim for using process in browser
@@ -54320,12 +54508,12 @@
 
 
 /***/ },
-/* 19 */
+/* 21 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var utils = __webpack_require__(11);
+	var utils = __webpack_require__(13);
 
 	/**
 	 * Transform the data for a request or a response
@@ -54346,18 +54534,18 @@
 
 
 /***/ },
-/* 20 */
+/* 22 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {'use strict';
 
-	var utils = __webpack_require__(11);
-	var settle = __webpack_require__(21);
-	var buildURL = __webpack_require__(24);
-	var parseHeaders = __webpack_require__(25);
-	var isURLSameOrigin = __webpack_require__(26);
-	var createError = __webpack_require__(22);
-	var btoa = (typeof window !== 'undefined' && window.btoa) || __webpack_require__(27);
+	var utils = __webpack_require__(13);
+	var settle = __webpack_require__(23);
+	var buildURL = __webpack_require__(26);
+	var parseHeaders = __webpack_require__(27);
+	var isURLSameOrigin = __webpack_require__(28);
+	var createError = __webpack_require__(24);
+	var btoa = (typeof window !== 'undefined' && window.btoa) || __webpack_require__(29);
 
 	module.exports = function xhrAdapter(config) {
 	  return new Promise(function dispatchXhrRequest(resolve, reject) {
@@ -54451,7 +54639,7 @@
 	    // This is only done if running in a standard browser environment.
 	    // Specifically not if we're in a web worker, or react-native.
 	    if (utils.isStandardBrowserEnv()) {
-	      var cookies = __webpack_require__(28);
+	      var cookies = __webpack_require__(30);
 
 	      // Add xsrf header
 	      var xsrfValue = config.withCredentials || isURLSameOrigin(config.url) ?
@@ -54510,15 +54698,15 @@
 	  });
 	};
 
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(18)))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(20)))
 
 /***/ },
-/* 21 */
+/* 23 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var createError = __webpack_require__(22);
+	var createError = __webpack_require__(24);
 
 	/**
 	 * Resolve or reject a Promise based on response status.
@@ -54544,12 +54732,12 @@
 
 
 /***/ },
-/* 22 */
+/* 24 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var enhanceError = __webpack_require__(23);
+	var enhanceError = __webpack_require__(25);
 
 	/**
 	 * Create an Error with the specified message, config, error code, and response.
@@ -54567,7 +54755,7 @@
 
 
 /***/ },
-/* 23 */
+/* 25 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -54592,12 +54780,12 @@
 
 
 /***/ },
-/* 24 */
+/* 26 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var utils = __webpack_require__(11);
+	var utils = __webpack_require__(13);
 
 	function encode(val) {
 	  return encodeURIComponent(val).
@@ -54666,12 +54854,12 @@
 
 
 /***/ },
-/* 25 */
+/* 27 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var utils = __webpack_require__(11);
+	var utils = __webpack_require__(13);
 
 	/**
 	 * Parse headers into an object
@@ -54709,12 +54897,12 @@
 
 
 /***/ },
-/* 26 */
+/* 28 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var utils = __webpack_require__(11);
+	var utils = __webpack_require__(13);
 
 	module.exports = (
 	  utils.isStandardBrowserEnv() ?
@@ -54783,7 +54971,7 @@
 
 
 /***/ },
-/* 27 */
+/* 29 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -54825,12 +55013,12 @@
 
 
 /***/ },
-/* 28 */
+/* 30 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var utils = __webpack_require__(11);
+	var utils = __webpack_require__(13);
 
 	module.exports = (
 	  utils.isStandardBrowserEnv() ?
@@ -54884,7 +55072,7 @@
 
 
 /***/ },
-/* 29 */
+/* 31 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -54904,7 +55092,7 @@
 
 
 /***/ },
-/* 30 */
+/* 32 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -54922,7 +55110,7 @@
 
 
 /***/ },
-/* 31 */
+/* 33 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -54955,7 +55143,7 @@
 
 
 /***/ },
-/* 32 */
+/* 34 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -54966,7 +55154,7 @@
 	exports.runCamera = runCamera;
 	exports.stopCamera = stopCamera;
 
-	var _api = __webpack_require__(8);
+	var _api = __webpack_require__(10);
 
 	var _api2 = _interopRequireDefault(_api);
 

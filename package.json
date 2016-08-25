@@ -12,6 +12,7 @@
   "license": "ISC",
   "dependencies": {
     "angular": "^1.5.8",
+    "angular-contenteditable": "0.0.2",
     "angular-route": "^1.5.8",
     "angular-translate": "^2.11.1",
     "axios": "^0.13.1",
@@ -22,6 +23,7 @@
     "babel-cli": "^6.11.4",
     "babel-core": "^6.13.2",
     "babel-loader": "^6.2.5",
-    "babel-preset-es2015": "^6.13.2"
+    "babel-preset-es2015": "^6.13.2",
+    "webpack-uglify-js-plugin": "^1.1.9"
   }
 }
