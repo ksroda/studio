@@ -26,7 +26,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use(cors())
 
-const token = '8ob86V8686o86oBkuybuyiHIYILBO88O6V8b8yhkuybiuykuyYVKUYVYBL8YB8HKUhb8y8KHJKU8I8IHHOih'
+const token = '8ob86V8686o86oBkuybuyiHIYILBO88O6V8b8yhkuybwewfsbxccxuyYVKUYVYBL8YB8HKUhb8y8KHJKU8I8IHHOih'
 app.use(function(req, res, next) {
   console.log(req.query.token)
   const tokenClient = req.body.token || req.query.token

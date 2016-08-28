@@ -1,4 +1,3 @@
-
   <div class="container-fluid">
             <!-- Page Heading -->
             <div class="row">
@@ -55,18 +54,28 @@
                         <h4 class="modal-title">Modal Header</h4>
                       </div>
                       <div class="modal-body">
-
-                        <!-- {{ questiontToEdit.question }} -->
+                        <b>Treść pytania:</b>
                         <span contenteditable="true"
                           ng-model="questiontToEdit.question"
                           strip-br="true"
                           strip-tags="true"
                           select-non-editable="true">
                         </span>
+                        <br />
+
+                        <div ng-repeat="(key, answer) in questiontToEdit.answers">
+                          <b>{{ key | uppercase }})</b>
+                          <span contenteditable="true"
+                            ng-model="questiontToEdit.answers[key]"
+                            strip-br="true"
+                            strip-tags="true"
+                            select-non-editable="true">
+                          </span>
+                        </div>
 
                       </div>
                       <div class="modal-footer">
-                        <button type="button" class="btn btn-default" ng-click="alert(questiontToEdit)" data-dismiss="modal">Send</button>
+                        <button type="button" class="btn btn-default" ng-click="alert()" data-dismiss="modal">Send</button>
                         <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
                       </div>
                     </div>
@@ -103,13 +112,8 @@
               </select>
             </div>
             <!-- /.row -->
-
-
-
         </div>
         <!-- /.container-fluid -->
-
     </div>
     <!-- /#page-wrapper -->
-
 <!-- /#wrapper -->

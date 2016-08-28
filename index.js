@@ -48,6 +48,7 @@ angular.module('myApp', [angularRoute, angularTranslate, angularContenteditable]
     const checkStorage = storage => {
       const login = storage.getItem('studioLogin')
       const token = storage.getItem('studioToken')
+      // console.log('storage', storage)
 
       return new Promise((resolve, reject) => {
         if (login && token) {
@@ -65,6 +66,7 @@ angular.module('myApp', [angularRoute, angularTranslate, angularContenteditable]
         .catch(error => {
           checkStorage(localStorage)
             .catch(error => {
+              console.log('przekierowanie na login')
               $location.path('/login').replace()
             })
         })
@@ -92,13 +94,21 @@ angular.module('myApp', [angularRoute, angularTranslate, angularContenteditable]
     }
   })
 
-  .controller('myCtrl', ['$scope', '$translate', function ($scope, $translate) {
+  .run(['$rootScope', '$location', 'authService', function ($rootScope, $location, authService) {
+    $rootScope.$on('$routeChangeStart', function (event) {
+      authService.authorization()
+    })
+  }])
+
+  .controller('myCtrl', ['$scope', '$translate', 'authService', function ($scope, $translate, authService) {
     $scope.visibleMenu = true
     $scope.language = 'pl'
     $scope.languages = ['en', 'pl']
     $scope.updateLanguage = () => {
       $translate.use($scope.language)
     }
+
+
 
     $scope.menuTree = [
       {
@@ -246,8 +256,19 @@ angular.module('myApp', [angularRoute, angularTranslate, angularContenteditable]
           $scope.turnPage(1)
         }
 
-        $scope.alert = (data) => {
-          alert(JSON.stringify(data))
+        $scope.alert = () => {
+          API.questions.put({ question: $scope.questiontToEdit })
+            .then(response => {
+              console.log('response', response)
+            })
+            .catch(error => {
+              console.log('error', error)
+            })
+            .then(() => {
+              console.log('reset cache')
+              $scope.baza_pytan = []
+              $scope.turnPage($scope.currentPage)
+            })
         }
 
         $scope.fetchQuestion = (id) => {
@@ -296,6 +317,7 @@ angular.module('myApp', [angularRoute, angularTranslate, angularContenteditable]
               $scope.cachedPages = cachedPages
             // })
           }
+          $scope.currentPage = page
         }
         $scope.turnPage(1)
       }]

@@ -103,6 +103,7 @@
 	  var checkStorage = function checkStorage(storage) {
 	    var login = storage.getItem('studioLogin');
 	    var token = storage.getItem('studioToken');
+	    // console.log('storage', storage)
 
 	    return new Promise(function (resolve, reject) {
 	      if (login && token) {
@@ -116,6 +117,7 @@
 	  var authorization = function authorization() {
 	    checkStorage(sessionStorage).catch(function (error) {
 	      checkStorage(localStorage).catch(function (error) {
+	        console.log('przekierowanie na login');
 	        $location.path('/login').replace();
 	      });
 	    });
@@ -139,7 +141,11 @@
 	    authorization: authorization,
 	    authentication: authentication
 	  };
-	}).controller('myCtrl', ['$scope', '$translate', function ($scope, $translate) {
+	}).run(['$rootScope', '$location', 'authService', function ($rootScope, $location, authService) {
+	  $rootScope.$on('$routeChangeStart', function (event) {
+	    authService.authorization();
+	  });
+	}]).controller('myCtrl', ['$scope', '$translate', 'authService', function ($scope, $translate, authService) {
 	  $scope.visibleMenu = true;
 	  $scope.language = 'pl';
 	  $scope.languages = ['en', 'pl'];
@@ -253,8 +259,16 @@
 	    $scope.turnPage(1);
 	  };
 
-	  $scope.alert = function (data) {
-	    alert(JSON.stringify(data));
+	  $scope.alert = function () {
+	    _api2.default.questions.put({ question: $scope.questiontToEdit }).then(function (response) {
+	      console.log('response', response);
+	    }).catch(function (error) {
+	      console.log('error', error);
+	    }).then(function () {
+	      console.log('reset cache');
+	      $scope.baza_pytan = [];
+	      $scope.turnPage($scope.currentPage);
+	    });
 	  };
 
 	  $scope.fetchQuestion = function (id) {
@@ -299,6 +313,7 @@
 	      $scope.cachedPages = cachedPages;
 	      // })
 	    }
+	    $scope.currentPage = page;
 	  };
 	  $scope.turnPage(1);
 	}]).directive("passwordVerify", function () {
@@ -53603,9 +53618,14 @@
 	};
 
 	var api = {
-	  login: {
+	  auth: {
 	    post: function post(data) {
 	      return getPromise(baseURL + '/auth', data, 'post');
+	    }
+	  },
+	  login: {
+	    post: function post(data) {
+	      return getPromise(baseURL + '/login', data, 'post');
 	    }
 	  },
 	  questions: {
@@ -53620,6 +53640,9 @@
 	    }, // mock
 	    post: function post(data) {
 	      return getPromise('./test.json', data, 'post');
+	    },
+	    put: function put(data) {
+	      return getPromise(baseURL + '/questions', data, 'put');
 	    }
 	  },
 	  profile: {
