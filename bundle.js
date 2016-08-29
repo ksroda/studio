@@ -70,7 +70,7 @@
 
 	var _api2 = _interopRequireDefault(_api);
 
-	var _camera = __webpack_require__(34);
+	var _camera = __webpack_require__(11);
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -117,17 +117,28 @@
 	  var authorization = function authorization() {
 	    checkStorage(sessionStorage).catch(function (error) {
 	      checkStorage(localStorage).catch(function (error) {
-	        console.log('przekierowanie na login');
 	        $location.path('/login').replace();
 	      });
 	    });
 	  };
 
 	  var authentication = function authentication(login, password, rememberMe, callback) {
-	    _api2.default.login.post({ 'Email': '', 'Login': login, 'Password': password }).then(function (response) {
+	    _api2.default.login.post({ 'Login': '', 'Email': login, 'Password': password }).then(function (response) {
 	      console.log(response);
 	      $location.path(response.data ? '/' : '/login').replace();
 	      var storage = rememberMe ? localStorage : sessionStorage;
+
+	      switch (storage) {
+	        case localStorage:
+	          sessionStorage.removeItem('studioLogin');
+	          sessionStorage.removeItem('studioToken');
+	          break;
+	        case sessionStorage:
+	          localStorage.removeItem('studioToken');
+	          localStorage.removeItem('studioLogin');
+	          break;
+	      }
+
 	      storage.setItem('studioLogin', login);
 	      storage.setItem('studioToken', response.data);
 	      callback('');
@@ -141,16 +152,31 @@
 	    authorization: authorization,
 	    authentication: authentication
 	  };
-	}).run(['$rootScope', '$location', 'authService', function ($rootScope, $location, authService) {
-	  $rootScope.$on('$routeChangeStart', function (event) {
-	    authService.authorization();
-	  });
-	}]).controller('myCtrl', ['$scope', '$translate', 'authService', function ($scope, $translate, authService) {
+	})
+
+	// .run(['$rootScope', '$location', 'authService', function ($rootScope, $location, authService) {
+	//   $rootScope.$on('$routeChangeStart', function (event) {
+	//     authService.authorization()
+	//   })
+	// }])
+
+	.controller('myCtrl', ['$scope', '$translate', 'authService', '$location', function ($scope, $translate, authService, $location) {
 	  $scope.visibleMenu = true;
 	  $scope.language = 'pl';
 	  $scope.languages = ['en', 'pl'];
 	  $scope.updateLanguage = function () {
 	    $translate.use($scope.language);
+	  };
+
+	  $scope.logout = function () {
+	    sessionStorage.removeItem('studioLogin');
+	    sessionStorage.removeItem('studioToken');
+
+	    localStorage.removeItem('studioToken');
+	    localStorage.removeItem('studioLogin');
+
+	    $location.path('/login').replace();
+	    // $scope.$apply()
 	  };
 
 	  $scope.menuTree = [{
@@ -250,7 +276,7 @@
 	    };
 	    _api2.default.questions.post(question_json);
 	  };
-	}]).controller('moje_pytania_controller', ['$scope', function ($scope) {
+	}]).controller('moje_pytania_controller', ['$scope', '$location', function ($scope, $location) {
 	  $scope.baza_pytan = [];
 	  $scope.numberOfEntriesOnPage = 25;
 
@@ -280,15 +306,11 @@
 	  };
 
 	  $scope.turnPage = function (page) {
-
 	    var numberOfEntriesOnPage = $scope.numberOfEntriesOnPage;
-
 	    var cachedPages = $scope.baza_pytan.slice((page - 1) * numberOfEntriesOnPage, page * numberOfEntriesOnPage).filter(function (page) {
 	      return page !== null;
 	    });
 	    var cachedPagesLength = cachedPages.length;
-
-	    console.log(page, $scope.totalNumberOfPages);
 
 	    if (cachedPagesLength === 0 || cachedPagesLength < numberOfEntriesOnPage && page !== $scope.totalNumberOfPages) {
 	      console.log('nowa strona');
@@ -298,6 +320,7 @@
 	        });
 
 	        var super_nowa_baza_pytan = nowa_baza_pytan.concat(response.data.data).concat($scope.baza_pytan.slice((page + 1) * numberOfEntriesOnPage));
+
 	        $scope.$apply(function () {
 	          $scope.baza_pytan = super_nowa_baza_pytan;
 	          $scope.cachedPages = response.data.data;
@@ -306,12 +329,12 @@
 	          $scope.allPages = allPages;
 	          $scope.totalNumberOfPages = _lodash2.default.max(allPages);
 	        });
-	        console.log(super_nowa_baza_pytan);
+	      }).catch(function (error) {
+	        $location.path('/login').replace();
+	        $scope.$apply();
 	      });
 	    } else {
-	      // $scope.$apply(function () {
 	      $scope.cachedPages = cachedPages;
-	      // })
 	    }
 	    $scope.currentPage = page;
 	  };
@@ -53594,38 +53617,40 @@
 
 	var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
-	var _axios2 = __webpack_require__(11);
+	var _axios = __webpack_require__(12);
 
-	var _axios3 = _interopRequireDefault(_axios2);
+	var _axios2 = _interopRequireDefault(_axios);
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 	function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
 	var protocol = 'http';
-	var host = 'localhost';
-	var port = '3000';
+	var host = '176.115.10.86';
+	var port = '9000';
 
 	var baseURL = protocol + '://' + host + ':' + port;
 
 	var getPromise = function getPromise(url, data, method) {
-	  return (0, _axios3.default)(_defineProperty({
+	  return (0, _axios2.default)(_extends(_defineProperty({
 	    method: method || 'get',
 	    url: url
-	  }, method === 'post' ? 'data' : 'params', _extends({}, data, {
-	    token: sessionStorage.getItem('studioToken') || localStorage.getItem('studioToken')
-	  })));
+	  }, method === 'post' ? 'data' : 'params', data), sessionStorage.getItem('studioToken') || localStorage.getItem('studioToken') ? {
+	    headers: {
+	      'TycheAT': sessionStorage.getItem('studioToken') || localStorage.getItem('studioToken')
+	    }
+	  } : {}));
 	};
 
 	var api = {
 	  auth: {
 	    post: function post(data) {
-	      return getPromise(baseURL + '/auth', data, 'post');
+	      return getPromise(baseURL + '/login', data, 'post');
 	    }
 	  },
 	  login: {
 	    post: function post(data) {
-	      return getPromise(baseURL + '/login', data, 'post');
+	      return getPromise(baseURL + '/api/auth', data, 'post');
 	    }
 	  },
 	  questions: {
@@ -53636,7 +53661,7 @@
 	      return getPromise('./baza_pytan_kasia.json');
 	    }, // mock
 	    getByPage: function getByPage(data) {
-	      return getPromise(baseURL + '/baza_pytan', data);
+	      return getPromise(baseURL + '/api/demo', data);
 	    }, // mock
 	    post: function post(data) {
 	      return getPromise('./test.json', data, 'post');
@@ -53666,17 +53691,117 @@
 /* 11 */
 /***/ function(module, exports, __webpack_require__) {
 
-	module.exports = __webpack_require__(12);
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	exports.runCamera = runCamera;
+	exports.stopCamera = stopCamera;
+
+	var _api = __webpack_require__(10);
+
+	var _api2 = _interopRequireDefault(_api);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	var localStream = void 0;
+
+	function runCamera() {
+	  var canvas = document.getElementById('canvas');
+	  var context = canvas.getContext('2d');
+	  var video = document.getElementById('video');
+	  var vendorUrl = window.URL || window.webkitURL;
+
+	  navigator.getMedia = navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.msGetUserMedia || navigator.mosGetUserMedia;
+
+	  navigator.getMedia({
+	    video: true,
+	    audio: false
+	  }, function (stream) {
+	    video.src = vendorUrl.createObjectURL(stream);
+	    video.play();
+	    localStream = stream;
+	  }, function (error) {
+	    console.log(error);
+	  });
+
+	  // video.addEventListener('play', function () {
+	  //   draw(this, context, 400, 300)
+	  // }, false)
+
+	  function draw(video, context, width, height) {
+	    context.drawImage(video, 0, 0, width, height);
+	    var blob = dataURItoBlob(canvas.toDataURL('image/jpeg'));
+	    var file = new FormData();
+	    file.append('captured', blob);
+	    _api2.default.image.post(file);
+
+	    // Ewentualny image processing
+	    // const imageData = context.getImageData(0, 0, width, height)
+	    // processImage(imageData)
+	    // context.putImageData(imageData, 0, 0)
+	  }
+
+	  return {
+	    captureImage: function captureImage() {
+	      draw(video, context, 400, 300);
+	    }
+	  };
+	}
+
+	function dataURItoBlob(dataURI) {
+	  var byteString = atob(dataURI.split(',')[1]);
+	  var mimeString = dataURI.split(',')[0].split(':')[1].split(';')[0];
+
+	  var ab = new ArrayBuffer(byteString.length);
+	  var ia = new Uint8Array(ab);
+	  for (var i = 0; i < byteString.length; i++) {
+	    ia[i] = byteString.charCodeAt(i);
+	  }
+
+	  var bb = new Blob([ab], { type: mimeString });
+	  return bb;
+	}
+
+	function stopCamera() {
+	  var track = localStream.getTracks()[0];
+	  track.stop();
+	  video.pause();
+	}
+
+	// Mutable function!
+	function processImage(imageData) {
+	  for (var i = 0; i < imageData.data.length; i += 4) {
+	    var data = {
+	      r: imageData.data[i + 0],
+	      g: imageData.data[i + 1],
+	      b: imageData.data[i + 2],
+	      a: imageData.data[i + 3]
+	    };
+
+	    imageData.data[i + 0] = data.r;
+	    imageData.data[i + 1] = data.g;
+	    imageData.data[i + 2] = data.b;
+	    imageData.data[i + 3] = data.a;
+	  }
+	}
 
 /***/ },
 /* 12 */
 /***/ function(module, exports, __webpack_require__) {
 
+	module.exports = __webpack_require__(13);
+
+/***/ },
+/* 13 */
+/***/ function(module, exports, __webpack_require__) {
+
 	'use strict';
 
-	var utils = __webpack_require__(13);
-	var bind = __webpack_require__(14);
-	var Axios = __webpack_require__(15);
+	var utils = __webpack_require__(14);
+	var bind = __webpack_require__(15);
+	var Axios = __webpack_require__(16);
 
 	/**
 	 * Create an instance of Axios
@@ -53712,16 +53837,16 @@
 	axios.all = function all(promises) {
 	  return Promise.all(promises);
 	};
-	axios.spread = __webpack_require__(33);
+	axios.spread = __webpack_require__(34);
 
 
 /***/ },
-/* 13 */
+/* 14 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var bind = __webpack_require__(14);
+	var bind = __webpack_require__(15);
 
 	/*global toString:true*/
 
@@ -54021,7 +54146,7 @@
 
 
 /***/ },
-/* 14 */
+/* 15 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -54038,17 +54163,17 @@
 
 
 /***/ },
-/* 15 */
+/* 16 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var defaults = __webpack_require__(16);
-	var utils = __webpack_require__(13);
-	var InterceptorManager = __webpack_require__(18);
-	var dispatchRequest = __webpack_require__(19);
-	var isAbsoluteURL = __webpack_require__(31);
-	var combineURLs = __webpack_require__(32);
+	var defaults = __webpack_require__(17);
+	var utils = __webpack_require__(14);
+	var InterceptorManager = __webpack_require__(19);
+	var dispatchRequest = __webpack_require__(20);
+	var isAbsoluteURL = __webpack_require__(32);
+	var combineURLs = __webpack_require__(33);
 
 	/**
 	 * Create a new instance of Axios
@@ -54129,13 +54254,13 @@
 
 
 /***/ },
-/* 16 */
+/* 17 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var utils = __webpack_require__(13);
-	var normalizeHeaderName = __webpack_require__(17);
+	var utils = __webpack_require__(14);
+	var normalizeHeaderName = __webpack_require__(18);
 
 	var PROTECTION_PREFIX = /^\)\]\}',?\n/;
 	var DEFAULT_CONTENT_TYPE = {
@@ -54207,12 +54332,12 @@
 
 
 /***/ },
-/* 17 */
+/* 18 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var utils = __webpack_require__(13);
+	var utils = __webpack_require__(14);
 
 	module.exports = function normalizeHeaderName(headers, normalizedName) {
 	  utils.forEach(headers, function processHeader(value, name) {
@@ -54225,12 +54350,12 @@
 
 
 /***/ },
-/* 18 */
+/* 19 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var utils = __webpack_require__(13);
+	var utils = __webpack_require__(14);
 
 	function InterceptorManager() {
 	  this.handlers = [];
@@ -54283,13 +54408,13 @@
 
 
 /***/ },
-/* 19 */
+/* 20 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {'use strict';
 
-	var utils = __webpack_require__(13);
-	var transformData = __webpack_require__(21);
+	var utils = __webpack_require__(14);
+	var transformData = __webpack_require__(22);
 
 	/**
 	 * Dispatch a request to the server using whichever adapter
@@ -54330,10 +54455,10 @@
 	    adapter = config.adapter;
 	  } else if (typeof XMLHttpRequest !== 'undefined') {
 	    // For browsers use XHR adapter
-	    adapter = __webpack_require__(22);
+	    adapter = __webpack_require__(23);
 	  } else if (typeof process !== 'undefined') {
 	    // For node use HTTP adapter
-	    adapter = __webpack_require__(22);
+	    adapter = __webpack_require__(23);
 	  }
 
 	  return Promise.resolve(config)
@@ -54362,10 +54487,10 @@
 	    });
 	};
 
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(20)))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(21)))
 
 /***/ },
-/* 20 */
+/* 21 */
 /***/ function(module, exports) {
 
 	// shim for using process in browser
@@ -54531,12 +54656,12 @@
 
 
 /***/ },
-/* 21 */
+/* 22 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var utils = __webpack_require__(13);
+	var utils = __webpack_require__(14);
 
 	/**
 	 * Transform the data for a request or a response
@@ -54557,18 +54682,18 @@
 
 
 /***/ },
-/* 22 */
+/* 23 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {'use strict';
 
-	var utils = __webpack_require__(13);
-	var settle = __webpack_require__(23);
-	var buildURL = __webpack_require__(26);
-	var parseHeaders = __webpack_require__(27);
-	var isURLSameOrigin = __webpack_require__(28);
-	var createError = __webpack_require__(24);
-	var btoa = (typeof window !== 'undefined' && window.btoa) || __webpack_require__(29);
+	var utils = __webpack_require__(14);
+	var settle = __webpack_require__(24);
+	var buildURL = __webpack_require__(27);
+	var parseHeaders = __webpack_require__(28);
+	var isURLSameOrigin = __webpack_require__(29);
+	var createError = __webpack_require__(25);
+	var btoa = (typeof window !== 'undefined' && window.btoa) || __webpack_require__(30);
 
 	module.exports = function xhrAdapter(config) {
 	  return new Promise(function dispatchXhrRequest(resolve, reject) {
@@ -54662,7 +54787,7 @@
 	    // This is only done if running in a standard browser environment.
 	    // Specifically not if we're in a web worker, or react-native.
 	    if (utils.isStandardBrowserEnv()) {
-	      var cookies = __webpack_require__(30);
+	      var cookies = __webpack_require__(31);
 
 	      // Add xsrf header
 	      var xsrfValue = config.withCredentials || isURLSameOrigin(config.url) ?
@@ -54721,15 +54846,15 @@
 	  });
 	};
 
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(20)))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(21)))
 
 /***/ },
-/* 23 */
+/* 24 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var createError = __webpack_require__(24);
+	var createError = __webpack_require__(25);
 
 	/**
 	 * Resolve or reject a Promise based on response status.
@@ -54755,12 +54880,12 @@
 
 
 /***/ },
-/* 24 */
+/* 25 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var enhanceError = __webpack_require__(25);
+	var enhanceError = __webpack_require__(26);
 
 	/**
 	 * Create an Error with the specified message, config, error code, and response.
@@ -54778,7 +54903,7 @@
 
 
 /***/ },
-/* 25 */
+/* 26 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -54803,12 +54928,12 @@
 
 
 /***/ },
-/* 26 */
+/* 27 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var utils = __webpack_require__(13);
+	var utils = __webpack_require__(14);
 
 	function encode(val) {
 	  return encodeURIComponent(val).
@@ -54877,12 +55002,12 @@
 
 
 /***/ },
-/* 27 */
+/* 28 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var utils = __webpack_require__(13);
+	var utils = __webpack_require__(14);
 
 	/**
 	 * Parse headers into an object
@@ -54920,12 +55045,12 @@
 
 
 /***/ },
-/* 28 */
+/* 29 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var utils = __webpack_require__(13);
+	var utils = __webpack_require__(14);
 
 	module.exports = (
 	  utils.isStandardBrowserEnv() ?
@@ -54994,7 +55119,7 @@
 
 
 /***/ },
-/* 29 */
+/* 30 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -55036,12 +55161,12 @@
 
 
 /***/ },
-/* 30 */
+/* 31 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var utils = __webpack_require__(13);
+	var utils = __webpack_require__(14);
 
 	module.exports = (
 	  utils.isStandardBrowserEnv() ?
@@ -55095,7 +55220,7 @@
 
 
 /***/ },
-/* 31 */
+/* 32 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -55115,7 +55240,7 @@
 
 
 /***/ },
-/* 32 */
+/* 33 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -55133,7 +55258,7 @@
 
 
 /***/ },
-/* 33 */
+/* 34 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -55164,106 +55289,6 @@
 	  };
 	};
 
-
-/***/ },
-/* 34 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-	exports.runCamera = runCamera;
-	exports.stopCamera = stopCamera;
-
-	var _api = __webpack_require__(10);
-
-	var _api2 = _interopRequireDefault(_api);
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-	var localStream = void 0;
-
-	function runCamera() {
-	  var canvas = document.getElementById('canvas');
-	  var context = canvas.getContext('2d');
-	  var video = document.getElementById('video');
-	  var vendorUrl = window.URL || window.webkitURL;
-
-	  navigator.getMedia = navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.msGetUserMedia || navigator.mosGetUserMedia;
-
-	  navigator.getMedia({
-	    video: true,
-	    audio: false
-	  }, function (stream) {
-	    video.src = vendorUrl.createObjectURL(stream);
-	    video.play();
-	    localStream = stream;
-	  }, function (error) {
-	    console.log(error);
-	  });
-
-	  // video.addEventListener('play', function () {
-	  //   draw(this, context, 400, 300)
-	  // }, false)
-
-	  function draw(video, context, width, height) {
-	    context.drawImage(video, 0, 0, width, height);
-	    var blob = dataURItoBlob(canvas.toDataURL('image/jpeg'));
-	    var file = new FormData();
-	    file.append('captured', blob);
-	    _api2.default.image.post(file);
-
-	    // Ewentualny image processing
-	    // const imageData = context.getImageData(0, 0, width, height)
-	    // processImage(imageData)
-	    // context.putImageData(imageData, 0, 0)
-	  }
-
-	  return {
-	    captureImage: function captureImage() {
-	      draw(video, context, 400, 300);
-	    }
-	  };
-	}
-
-	function dataURItoBlob(dataURI) {
-	  var byteString = atob(dataURI.split(',')[1]);
-	  var mimeString = dataURI.split(',')[0].split(':')[1].split(';')[0];
-
-	  var ab = new ArrayBuffer(byteString.length);
-	  var ia = new Uint8Array(ab);
-	  for (var i = 0; i < byteString.length; i++) {
-	    ia[i] = byteString.charCodeAt(i);
-	  }
-
-	  var bb = new Blob([ab], { type: mimeString });
-	  return bb;
-	}
-
-	function stopCamera() {
-	  var track = localStream.getTracks()[0];
-	  track.stop();
-	  video.pause();
-	}
-
-	// Mutable function!
-	function processImage(imageData) {
-	  for (var i = 0; i < imageData.data.length; i += 4) {
-	    var data = {
-	      r: imageData.data[i + 0],
-	      g: imageData.data[i + 1],
-	      b: imageData.data[i + 2],
-	      a: imageData.data[i + 3]
-	    };
-
-	    imageData.data[i + 0] = data.r;
-	    imageData.data[i + 1] = data.g;
-	    imageData.data[i + 2] = data.b;
-	    imageData.data[i + 3] = data.a;
-	  }
-	}
 
 /***/ }
 /******/ ]);

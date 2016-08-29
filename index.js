@@ -66,18 +66,29 @@ angular.module('myApp', [angularRoute, angularTranslate, angularContenteditable]
         .catch(error => {
           checkStorage(localStorage)
             .catch(error => {
-              console.log('przekierowanie na login')
               $location.path('/login').replace()
             })
         })
     }
 
     const authentication = (login, password, rememberMe, callback) => {
-      API.login.post({ 'Email': '', 'Login': login, 'Password': password })
+      API.login.post({ 'Login': '', 'Email': login, 'Password': password })
         .then(response => {
           console.log(response)
           $location.path(response.data ? '/' : '/login').replace()
           const storage = rememberMe ? localStorage : sessionStorage
+
+          switch (storage) {
+            case localStorage:
+              sessionStorage.removeItem('studioLogin')
+              sessionStorage.removeItem('studioToken')
+              break
+            case sessionStorage:
+              localStorage.removeItem('studioToken')
+              localStorage.removeItem('studioLogin')
+              break
+          }
+
           storage.setItem('studioLogin', login)
           storage.setItem('studioToken', response.data)
           callback('')
@@ -94,13 +105,13 @@ angular.module('myApp', [angularRoute, angularTranslate, angularContenteditable]
     }
   })
 
-  .run(['$rootScope', '$location', 'authService', function ($rootScope, $location, authService) {
-    $rootScope.$on('$routeChangeStart', function (event) {
-      authService.authorization()
-    })
-  }])
+  // .run(['$rootScope', '$location', 'authService', function ($rootScope, $location, authService) {
+  //   $rootScope.$on('$routeChangeStart', function (event) {
+  //     authService.authorization()
+  //   })
+  // }])
 
-  .controller('myCtrl', ['$scope', '$translate', 'authService', function ($scope, $translate, authService) {
+  .controller('myCtrl', ['$scope', '$translate', 'authService', '$location', function ($scope, $translate, authService, $location) {
     $scope.visibleMenu = true
     $scope.language = 'pl'
     $scope.languages = ['en', 'pl']
@@ -108,7 +119,16 @@ angular.module('myApp', [angularRoute, angularTranslate, angularContenteditable]
       $translate.use($scope.language)
     }
 
+    $scope.logout = () => {
+      sessionStorage.removeItem('studioLogin')
+      sessionStorage.removeItem('studioToken')
 
+      localStorage.removeItem('studioToken')
+      localStorage.removeItem('studioLogin')
+
+      $location.path('/login').replace()
+      // $scope.$apply()
+    }
 
     $scope.menuTree = [
       {
@@ -247,7 +267,7 @@ angular.module('myApp', [angularRoute, angularTranslate, angularContenteditable]
       }])
 
     .controller('moje_pytania_controller',
-      ['$scope', $scope => {
+      ['$scope', '$location', ($scope, $location) => {
         $scope.baza_pytan = []
         $scope.numberOfEntriesOnPage = 25
 
@@ -281,16 +301,12 @@ angular.module('myApp', [angularRoute, angularTranslate, angularContenteditable]
         }
 
         $scope.turnPage = (page) => {
-
           const numberOfEntriesOnPage = $scope.numberOfEntriesOnPage
-
           const cachedPages = $scope.baza_pytan.slice(
             (page - 1) * numberOfEntriesOnPage,
             page * numberOfEntriesOnPage
           ).filter(page => page !== null)
           const cachedPagesLength = cachedPages.length
-
-          console.log(page, $scope.totalNumberOfPages)
 
           if (cachedPagesLength === 0 || cachedPagesLength < numberOfEntriesOnPage && page !== $scope.totalNumberOfPages) {
             console.log('nowa strona')
@@ -300,7 +316,10 @@ angular.module('myApp', [angularRoute, angularTranslate, angularContenteditable]
                   $scope.baza_pytan[index] || null
                 )
 
-                const super_nowa_baza_pytan = nowa_baza_pytan.concat(response.data.data).concat($scope.baza_pytan.slice((page + 1) * numberOfEntriesOnPage))
+                const super_nowa_baza_pytan = nowa_baza_pytan
+                  .concat(response.data.data)
+                  .concat($scope.baza_pytan.slice((page + 1) * numberOfEntriesOnPage))
+
                 $scope.$apply(function () {
                   $scope.baza_pytan = super_nowa_baza_pytan
                   $scope.cachedPages = response.data.data
@@ -310,12 +329,13 @@ angular.module('myApp', [angularRoute, angularTranslate, angularContenteditable]
                   $scope.allPages = allPages
                   $scope.totalNumberOfPages = _.max(allPages)
                 })
-                console.log(super_nowa_baza_pytan)
+              })
+              .catch(error => {
+                $location.path('/login').replace()
+                $scope.$apply()
               })
           } else {
-            // $scope.$apply(function () {
-              $scope.cachedPages = cachedPages
-            // })
+            $scope.cachedPages = cachedPages
           }
           $scope.currentPage = page
         }

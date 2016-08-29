@@ -28,9 +28,9 @@ app.use(cors())
 
 const token = '8ob86V8686o86oBkuybuyiHIYILBO88O6V8b8yhkuybwewfsbxccxuyYVKUYVYBL8YB8HKUhb8y8KHJKU8I8IHHOih'
 app.use(function(req, res, next) {
-  console.log(req.query.token)
+  console.log(req.originalUrl)
   const tokenClient = req.body.token || req.query.token
-  if (token === tokenClient) {
+  if (token === tokenClient || req.originalUrl === '/login') {
     next()
   } else {
     res.status(401).send('Unauthorized')
