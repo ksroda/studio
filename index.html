@@ -71,7 +71,7 @@
 <div class="collapse navbar-collapse navbar-ex1-collapse" ng-show="visibleMenu">
   <ul class="nav navbar-nav side-nav">
     <li ng-repeat="item in menuTree" ng-class="{ active: item.active }">
-      <a href="#/" ng-if="!item.submenu">
+      <a href="{{ item.path }}" ng-if="!item.submenu">
         <i ng-if="item.icon" class="fa fa-fw {{ item.icon }}"></i>
         {{ item.name }}
       </a>

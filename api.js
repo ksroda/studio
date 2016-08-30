@@ -1,8 +1,8 @@
 import axios from 'axios'
 
 const protocol = 'http'
-const host = '176.115.10.86'
-const port = '9000'
+const host = 'localhost'
+const port = '3000'
 
 const baseURL = `${protocol}://${host}:${port}`
 
@@ -24,15 +24,15 @@ const getPromise = (url, data, method) => axios({
 
 const api = {
   auth: {
-    post: data => getPromise(`${baseURL}/login`, data, 'post')
+    post: data => getPromise(`${baseURL}/auth`, data, 'post')
   },
   login: {
-    post: data => getPromise(`${baseURL}/api/auth`, data, 'post')
+    post: data => getPromise(`${baseURL}/login`, data, 'post')
   },
   questions: {
     get: data => getPromise(`${baseURL}/question/${data.id}`),
     getByAuthor: () => getPromise('./baza_pytan_kasia.json'), // mock
-    getByPage: data => getPromise(`${baseURL}/api/demo`, data), // mock
+    getByPage: data => getPromise(`${baseURL}/questions`, data), // mock
     post: data => getPromise('./test.json', data, 'post'),
     put: data => getPromise(`${baseURL}/questions`, data, 'put')
   },

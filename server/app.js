@@ -26,10 +26,14 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use(cors())
 
+app.use(function (req, res, next) {
+  setTimeout(next, 2000)
+})
+
 const token = '8ob86V8686o86oBkuybuyiHIYILBO88O6V8b8yhkuybwewfsbxccxuyYVKUYVYBL8YB8HKUhb8y8KHJKU8I8IHHOih'
 app.use(function(req, res, next) {
   console.log(req.originalUrl)
-  const tokenClient = req.body.token || req.query.token
+  const tokenClient = req.headers.tycheat
   if (token === tokenClient || req.originalUrl === '/login') {
     next()
   } else {

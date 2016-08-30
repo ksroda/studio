@@ -22,7 +22,7 @@ const baza_pytan_data = _.range(1, 401).reduce((acc, id) => [
 
 /* GET home page. */
 router.post('/login', function (req, res, next) {
-  const { Login: login, Password: password } = req.body
+  const { Email: login, Password: password } = req.body
   console.log(req.body)
   if (login === 'jan' && password === 'mak') {
     res.send(token)
@@ -41,8 +41,7 @@ router.post('/auth', function (req, res, next) {
   }
 })
 
-router.get('/baza_pytan', function (req, res, next) {
-  console.log('jestem tu')
+router.get('/questions', function (req, res, next) {
   const { page, numberOfEntriesOnPage } = req.query
   if (!!page && !!numberOfEntriesOnPage) {
     res.json({

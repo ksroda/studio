@@ -1,14 +1,16 @@
 import _ from 'lodash'
 import angular from 'angular'
 import angularRoute from 'angular-route'
+import angularMaterial from 'angular-material'
 import angularTranslate from 'angular-translate'
 import angularContenteditable from 'angular-contenteditable'
 
+import { transformMenu } from './utils'
 import API from './api'
 
 import { runCamera, stopCamera, captureImage } from './camera'
 
-angular.module('myApp', [angularRoute, angularTranslate, angularContenteditable])
+angular.module('myApp', [angularRoute, angularTranslate, angularContenteditable, angularMaterial])
   .config(function($routeProvider) {
     $routeProvider
       .when("/", {
@@ -130,12 +132,13 @@ angular.module('myApp', [angularRoute, angularTranslate, angularContenteditable]
       // $scope.$apply()
     }
 
-    $scope.menuTree = [
+    const menuTree = [
       {
         name: 'Strona główna',
         path: '#/',
         icon: 'fa-home',
-        active: true
+        active: true,
+        access: ['admin', 'teacher', 'student']
       },
       {
         name: 'Baza pytań',
@@ -143,21 +146,25 @@ angular.module('myApp', [angularRoute, angularTranslate, angularContenteditable]
         submenu: [
           {
             name: 'Przeglądaj bazę pytań',
-            path: '#/baza_pytan'
+            path: '#/baza_pytan',
+            access: ['admin', 'teacher', 'student']
           },
           {
             name: 'Przeglądaj swoje pytania',
-            path: '#/moje_pytania'
+            path: '#/moje_pytania',
+            access: ['admin', 'teacher']
           },
           {
             name: 'Dodaj pytanie',
-            path: '#/dodaj_pytanie'
+            path: '#/dodaj_pytanie',
+            access: ['admin', 'teacher']
           }
         ]
       },
       {
         name: 'Egzamin',
         target: 'egzamin',
+        access: ['admin', 'teacher'],
         submenu: [
           {
             name: 'Aktualny egzamin',
@@ -176,10 +183,14 @@ angular.module('myApp', [angularRoute, angularTranslate, angularContenteditable]
       {
         name: 'Webcam',
         icon: 'fa-video-camera',
-        path: '#/webcam'
+        path: '#/webcam',
+        access: ['admin', 'teacher']
       }
     ]
+
+    $scope.menuTree = transformMenu(menuTree, 'admin')
   }])
+
 
   .controller('login_controller', ['$scope', 'authService',
     ($scope, authService) => {
@@ -292,15 +303,19 @@ angular.module('myApp', [angularRoute, angularTranslate, angularContenteditable]
         }
 
         $scope.fetchQuestion = (id) => {
+          $scope.questiontToEdit = {}
+          $scope.canSeeModal = false
           API.questions.get({ id })
             .then(response => {
               $scope.$apply(function () {
                 $scope.questiontToEdit = response.data
+                $scope.canSeeModal = true
               })
             })
         }
 
         $scope.turnPage = (page) => {
+          $scope.canSeePage = false
           const numberOfEntriesOnPage = $scope.numberOfEntriesOnPage
           const cachedPages = $scope.baza_pytan.slice(
             (page - 1) * numberOfEntriesOnPage,
@@ -328,6 +343,7 @@ angular.module('myApp', [angularRoute, angularTranslate, angularContenteditable]
                     .range(1, Math.ceil(response.data.totalNumberOfEntries/numberOfEntriesOnPage) + 1)
                   $scope.allPages = allPages
                   $scope.totalNumberOfPages = _.max(allPages)
+                  $scope.canSeePage = true
                 })
               })
               .catch(error => {
@@ -336,6 +352,7 @@ angular.module('myApp', [angularRoute, angularTranslate, angularContenteditable]
               })
           } else {
             $scope.cachedPages = cachedPages
+            $scope.canSeePage = true
           }
           $scope.currentPage = page
         }

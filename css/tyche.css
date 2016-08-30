@@ -246,3 +246,8 @@ html,body { height:100%; }
   background-color: gray;
   color: white;
 }
+
+md-progress-circular {
+  position: relative;
+  left: 50%;
+}

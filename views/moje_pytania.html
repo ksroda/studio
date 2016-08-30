@@ -1,119 +1,125 @@
-  <div class="container-fluid">
-            <!-- Page Heading -->
-            <div class="row">
-                <div class="col-lg-12">
-                    <h1 class="page-header">Baza pytań</h1>
-                </div>
-            </div>
-            <!-- /.row -->
-
-            <div class="row">
-                <div class="col-sm-12">
-                    <!-- <h2>Bordered Table</h2> -->
-                    <div class="table-responsive">
-                        <table class="table table-bordered table-hover">
-                            <thead>
-                                <tr>
-                                    <th>Treść pytania</th>
-                                    <th>Dział</th>
-                                    <th>Autor</th>
-                                    <th>Data modyfikacji</th>
-                                    <th></th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr ng-repeat="item in cachedPages | filter: search track by $index">
-                                  <td>pytanie {{ item.id }}</td>
-                                  <td>{{ item.subject }}</td>
-                                  <td>{{ item.author }}</td>
-                                  <td>{{ item.date }}</td>
-                                  <td>
-                                    <button
-                                      type="button"
-                                      class="btn btn-primary btn-sm"
-                                      data-toggle="modal"
-                                      data-target="#myModal"
-                                      ng-click="fetchQuestion(item.id)"
-                                    >
-                                      Details
-                                    </button>
-                                  </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-
-                <div id="myModal" class="modal fade" role="dialog">
-                  <div class="modal-dialog">
-
-                    <!-- Modal content-->
-                    <div class="modal-content">
-                      <div class="modal-header">
-                        <button type="button" class="close" data-dismiss="modal">&times;</button>
-                        <h4 class="modal-title">Modal Header</h4>
-                      </div>
-                      <div class="modal-body">
-                        <b>Treść pytania:</b>
-                        <span contenteditable="true"
-                          ng-model="questiontToEdit.question"
-                          strip-br="true"
-                          strip-tags="true"
-                          select-non-editable="true">
-                        </span>
-                        <br />
-
-                        <div ng-repeat="(key, answer) in questiontToEdit.answers">
-                          <b>{{ key | uppercase }})</b>
-                          <span contenteditable="true"
-                            ng-model="questiontToEdit.answers[key]"
-                            strip-br="true"
-                            strip-tags="true"
-                            select-non-editable="true">
-                          </span>
-                        </div>
-
-                      </div>
-                      <div class="modal-footer">
-                        <button type="button" class="btn btn-default" ng-click="alert()" data-dismiss="modal">Send</button>
-                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                      </div>
-                    </div>
-
-                  </div>
-                </div>
-
-
-                <div class="row">
-                    <div class="col-sm-3">
-                    </div>
-                    <div class="col-sm-6">
-                        <form role="form">
-                            <div class="form-group input-group">
-                            <input type="text" class="form-control" ng-model="search">
-                            <span class="input-group-btn"><button class="btn btn-default" type="button"><i class="fa fa-search"></i></button></span>
-                        </div>
-
-                    </form>
-                    </div>
-                    <div class="col-sm-3">
-                    </div>
-                </div>
-            </div>
-
-            <div id="pagination">
-              <div class="page" ng-repeat="page in allPages track by $index" ng-click="turnPage(page)">
-                {{ page }}
-              </div>
-            </div>
-            <div>
-              <select ng-init="numberOfEntriesOnPage = '25'" ng-model="numberOfEntriesOnPage" ng-change="resetCachedPages()">
-                <option ng-repeat="number in ['25', '50', '100']">{{ number }}</option>
-              </select>
-            </div>
-            <!-- /.row -->
-        </div>
-        <!-- /.container-fluid -->
+  <div class="container-fluid" ng-init="canSeePage = false; canSeeModal = false">
+    <div ng-if="!canSeePage">
+      <md-progress-circular class="md-hue" md-mode="indeterminate"></md-progress-circular>
     </div>
-    <!-- /#page-wrapper -->
-<!-- /#wrapper -->
+    <div ng-if="canSeePage">
+      <!-- Page Heading -->
+      <div class="row">
+          <div class="col-lg-12">
+              <h1 class="page-header">Baza pytań</h1>
+          </div>
+      </div>
+      <!-- /.row -->
+
+      <div class="row">
+          <div class="col-sm-12">
+              <!-- <h2>Bordered Table</h2> -->
+              <div class="table-responsive">
+                  <table class="table table-bordered table-hover">
+                      <thead>
+                          <tr>
+                              <th>Treść pytania</th>
+                              <th>Dział</th>
+                              <th>Autor</th>
+                              <th>Data modyfikacji</th>
+                              <th></th>
+                          </tr>
+                      </thead>
+                      <tbody>
+                          <tr ng-repeat="item in cachedPages | filter: search track by $index">
+                            <td>pytanie {{ item.id }}</td>
+                            <td>{{ item.subject }}</td>
+                            <td>{{ item.author }}</td>
+                            <td>{{ item.date }}</td>
+                            <td>
+                              <button
+                                type="button"
+                                class="btn btn-primary btn-sm"
+                                data-toggle="modal"
+                                data-target="#myModal"
+                                ng-click="fetchQuestion(item.id)"
+                              >
+                                Details
+                              </button>
+                            </td>
+                          </tr>
+                      </tbody>
+                  </table>
+              </div>
+          </div>
+
+          <div id="myModal" class="modal fade" role="dialog">
+            <div class="modal-dialog">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <button type="button" class="close" data-dismiss="modal">&times;</button>
+                  <h4 class="modal-title">Modal Header</h4>
+                </div>
+                <div class="modal-body">
+                  <div ng-if="!canSeeModal">
+                    <md-progress-circular class="md-hue" md-mode="indeterminate"></md-progress-circular>
+                  </div>
+                  <div ng-if="canSeeModal">
+                    <b>Treść pytania:</b>
+                    <span contenteditable="true"
+                      ng-model="questiontToEdit.question"
+                      strip-br="true"
+                      strip-tags="true"
+                      select-non-editable="true">
+                    </span>
+                    <br />
+
+                    <div ng-repeat="(key, answer) in questiontToEdit.answers">
+                      <b>{{ key | uppercase }})</b>
+                      <span contenteditable="true"
+                        ng-model="questiontToEdit.answers[key]"
+                        strip-br="true"
+                        strip-tags="true"
+                        select-non-editable="true">
+                      </span>
+                    </div>
+                  </div>
+
+
+                </div>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-default" ng-click="alert()" data-dismiss="modal">Send</button>
+                  <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                </div>
+              </div>
+
+            </div>
+          </div>
+
+
+          <div class="row">
+              <div class="col-sm-3">
+              </div>
+              <div class="col-sm-6">
+                  <form role="form">
+                      <div class="form-group input-group">
+                      <input type="text" class="form-control" ng-model="search">
+                      <span class="input-group-btn"><button class="btn btn-default" type="button"><i class="fa fa-search"></i></button></span>
+                  </div>
+
+              </form>
+              </div>
+              <div class="col-sm-3">
+              </div>
+          </div>
+      </div>
+
+      <div id="pagination">
+        <div class="page" ng-repeat="page in allPages track by $index" ng-click="turnPage(page)">
+          {{ page }}
+        </div>
+      </div>
+      <div>
+        <select ng-init="numberOfEntriesOnPage = '25'" ng-model="numberOfEntriesOnPage" ng-change="resetCachedPages()">
+          <option ng-repeat="number in ['25', '50', '100']">{{ number }}</option>
+        </select>
+      </div>
+      <!-- /.row -->
+  </div>
+  <!-- /.container-fluid -->
+</div>
