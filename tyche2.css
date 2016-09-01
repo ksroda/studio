@@ -1,0 +1,121 @@
+body {
+  margin: 0;
+}
+
+.toolbar {
+  position: fixed;
+  width: 100%;
+  height: auto;
+  border: 1px solid black;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.logo {
+  border: 1px solid black;
+  text-align: center;
+  display: flex;
+  /*align-items: center;*/
+}
+
+.menu {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.dropDownMenuButton {
+  width: 50px;
+  height: 50px;
+}
+
+.menuItem {
+  border: 1px solid black;
+  transition: height ease 0.4s;
+  padding: 20px 20px;
+}
+
+.tools {
+  display: flex;
+  border: 1px solid red;
+  justify-content: flex-end;
+}
+
+.toolsItem {
+  padding: 20px 20px;
+  border: 1px solid black;
+}
+
+.toolbar {
+  transition: height ease 0.4s;
+  overflow: hidden;
+}
+
+@media (min-width: 769px) {
+  .dropDownMenuButton {
+    display: none;
+  }
+
+  .img {
+    padding-left: 20px;
+  }
+
+  .logo {
+    flex: 1;
+  }
+
+  .menu {
+    flex: 3;
+  }
+
+  .tools {
+    flex: 2;
+  }
+}
+
+@media (max-width: 768px) {
+  .dropDownMenuButton {
+    display: block;
+  }
+
+  .toolbarVisible {
+    height: 350px;
+  }
+
+  .toolbarHidden {
+    height: 50px;
+  }
+
+  .img {
+    position: relative;
+    left: 50%;
+    transform: translate(-50%, 0);
+    padding-right: 80px;
+  }
+
+  .logo {
+    width: 100%;
+  }
+
+  .menu {
+    width: 100%;
+  }
+
+  .menuItem {
+    width: 100%;
+  }
+
+  .tools {
+    width: 100%;
+  }
+
+  .toolsItem:first-of-type {
+    flex: 1;
+    order: 2;
+  }
+
+  .toolsItem:last-of-type {
+    flex: 5;
+    order: 1;
+  }
+}

@@ -6,7 +6,8 @@
   "scripts": {
     "start": "python -m SimpleHTTPServer",
     "webpack": "webpack --watch",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "concurrently \"npm start\" \"npm run webpack\""
   },
   "author": "",
   "license": "ISC",
@@ -19,7 +20,7 @@
     "angular-route": "^1.5.8",
     "angular-translate": "^2.11.1",
     "axios": "^0.13.1",
-    "babel-plugin-transform-object-rest-spread": "^6.8.0",
+    "concurrently": "^2.2.0",
     "lodash": "^4.15.0",
     "webpack": "^1.13.2"
   },

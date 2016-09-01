@@ -12,19 +12,20 @@
     <title>TYCHE - System Obsługi Egzaminu Inżynierskiego</title>
 
     <!-- Bootstrap Core CSS -->
-    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <!-- <link href="css/bootstrap.min.css" rel="stylesheet"> -->
     <script src="js/lang.js"></script>
 
     <!-- Custom CSS -->
-    <link href="css/sb-admin.css" rel="stylesheet">
+    <!-- <link href="css/sb-admin.css" rel="stylesheet"> -->
 
     <!-- Morris Charts CSS -->
-    <link href="css/plugins/morris.css" rel="stylesheet">
+    <!-- <link href="css/plugins/morris.css" rel="stylesheet"> -->
 
     <!-- Custom Fonts -->
-    <link href="font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+    <!-- <link href="font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css"> -->
 
-    <link href="css/tyche.css" rel="stylesheet">
+    <!-- <link href="css/tyche.css" rel="stylesheet"> -->
+    <link href="tyche2.css" rel="stylesheet">
 
     <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
@@ -36,18 +37,16 @@
 </head>
 
 
-
-
 <body ng-app="myApp" ng-controller="myCtrl">
 
- <nav class="navbar">
+ <!--<nav class="navbar">
       <a class="navbar-brand"><img src="css/img/logo.png" id="logo"></a>
       <ul id="menu" class="nav navbar-nav side-nav collapse navbar-collapse ">
         <li ng-repeat="item in menuTree" ng-class="{ active: item.active }" class="">
           <a href="{{ item.path }}" ng-if="!item.submenu" class="przycisk" aria-haspopup="true" aria-expanded="false">
             <i ng-if="item.icon" class="fa fa-fw {{ item.icon }}"></i>{{ item.name }}
           </a>
-          <a href="javascript:;" ng-if="item.submenu" data-toggle="dropdown" class="przycisk dropdown-toggle " aria-haspopup="true" aria-expanded="false"><i class="fa fa-fw fa-caret-down"></i>{{ item.name }} <!--usunelam data-target="#{{ item.target }}" -->
+          <a href="javascript:;" ng-if="item.submenu" data-toggle="dropdown" class="przycisk dropdown-toggle " aria-haspopup="true" aria-expanded="false"><i class="fa fa-fw fa-caret-down"></i>{{ item.name }} <!--usunelam data-target="#{{ item.target }}"
           </a>
           <ul id="{{ item.target }}" ng-if="item.submenu" class="dropdown-menu dropmenu">
             <li ng-repeat="subItem in item.submenu" class="dropdown-header">
@@ -66,8 +65,8 @@
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
       </button>
-    </div>  
-      
+    </div>
+
     <ul id="right-menu" class="nav navbar-right top-nav pull-right" ng-show="visibleMenu">
       <li>
         <select ng-options="language | translate for language in languages" ng-model="language" ng-change="updateLanguage()"></select>
@@ -87,7 +86,7 @@
     </ul>
 
     </div>
-    
+
 </nav>
 
 
@@ -112,7 +111,7 @@
                 </li>
             </ul>
 
-           
+
             <div class="collapse navbar-collapse navbar-ex1-collapse" ng-show="visibleMenu">
               <ul class="nav navbar-nav side-nav">
                 <li ng-repeat="item in menuTree" ng-class="{ active: item.active }">
@@ -136,11 +135,29 @@
 
         </div>
 
-        </nav> 
+        </nav>
  -->
-  <div ng-view id="content"></div>
+  <!-- <div ng-view id="content"></div> -->
 
-        <script src="bundle.js"></script>
+    <nav ng-class="{ toolbar: true, toolbarVisible: dropDownMenuVisible, toolbarHidden: !dropDownMenuVisible }">
+      <div class="logo">
+        <button class="dropDownMenuButton" ng-click="dropDownHandler()">
+          ///
+        </button>
+        <div class="img">logo</div></div>
+      <div class="menu">
+        <div class="menuItem">item 1</div>
+        <div class="menuItem">item 2</div>
+        <div class="menuItem">item 3</div>
+        <div class="menuItem">item 4</div>
+      </div>
+      <div class="tools">
+        <div class="toolsItem">language</div>
+        <div class="toolsItem">profile</div>
+      </div>
+    </nav>
+
+    <script src="bundle.js"></script>
 
     <!-- jQuery -->
     <script src="js/jquery.js"></script>

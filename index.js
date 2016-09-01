@@ -10,6 +10,62 @@ import API from './api'
 
 import { runCamera, stopCamera, captureImage } from './camera'
 
+const menuTree = [
+  {
+    name: 'Strona główna',
+    path: '#/',
+    icon: 'fa-home',
+    active: true,
+    access: ['admin', 'teacher', 'student']
+  },
+  {
+    name: 'Baza pytań',
+    target: 'baza',
+    submenu: [
+      {
+        name: 'Przeglądaj bazę pytań',
+        path: '#/baza_pytan',
+        access: ['admin', 'teacher', 'student']
+      },
+      {
+        name: 'Przeglądaj swoje pytania',
+        path: '#/moje_pytania',
+        access: ['admin', 'teacher']
+      },
+      {
+        name: 'Dodaj pytanie',
+        path: '#/dodaj_pytanie',
+        access: ['admin', 'teacher']
+      }
+    ]
+  },
+  {
+    name: 'Egzamin',
+    target: 'egzamin',
+    access: ['admin', 'teacher'],
+    submenu: [
+      {
+        name: 'Aktualny egzamin',
+        path: '#/aktualne_pytania'
+      },
+      {
+        name: 'Generuj nowy egzamin',
+        path: '#/generuj_egzamin'
+      },
+      {
+        name: 'Generuj raporty',
+        path: '#/generuj_raporty'
+      }
+    ]
+  },
+  {
+    name: 'Webcam',
+    icon: 'fa-video-camera',
+    path: '#/webcam',
+    access: ['admin', 'teacher']
+  }
+]
+
 angular.module('myApp', [angularRoute, angularTranslate, angularContenteditable, angularMaterial])
   .config(function($routeProvider) {
     $routeProvider
@@ -107,12 +163,6 @@ angular.module('myApp', [angularRoute, angularTranslate, angularContenteditable,
     }
   })
 
-  // .run(['$rootScope', '$location', 'authService', function ($rootScope, $location, authService) {
-  //   $rootScope.$on('$routeChangeStart', function (event) {
-  //     authService.authorization()
-  //   })
-  // }])
-
   .controller('myCtrl', ['$scope', '$translate', 'authService', '$location', function ($scope, $translate, authService, $location) {
     $scope.visibleMenu = true
     $scope.language = 'pl'
@@ -129,66 +179,14 @@ angular.module('myApp', [angularRoute, angularTranslate, angularContenteditable,
       localStorage.removeItem('studioLogin')
 
       $location.path('/login').replace()
-      // $scope.$apply()
     }
 
-    const menuTree = [
-      {
-        name: 'Strona główna',
-        path: '#/',
-        icon: 'fa-home',
-        active: true,
-        access: ['admin', 'teacher', 'student']
-      },
-      {
-        name: 'Baza pytań',
-        target: 'baza',
-        submenu: [
-          {
-            name: 'Przeglądaj bazę pytań',
-            path: '#/baza_pytan',
-            access: ['admin', 'teacher', 'student']
-          },
-          {
-            name: 'Przeglądaj swoje pytania',
-            path: '#/moje_pytania',
-            access: ['admin', 'teacher']
-          },
-          {
-            name: 'Dodaj pytanie',
-            path: '#/dodaj_pytanie',
-            access: ['admin', 'teacher']
-          }
-        ]
-      },
-      {
-        name: 'Egzamin',
-        target: 'egzamin',
-        access: ['admin', 'teacher'],
-        submenu: [
-          {
-            name: 'Aktualny egzamin',
-            path: '#/aktualne_pytania'
-          },
-          {
-            name: 'Generuj nowy egzamin',
-            path: '#/generuj_egzamin'
-          },
-          {
-            name: 'Generuj raporty',
-            path: '#/generuj_raporty'
-          }
-        ]
-      },
-      {
-        name: 'Webcam',
-        icon: 'fa-video-camera',
-        path: '#/webcam',
-        access: ['admin', 'teacher']
-      }
-    ]
-
     $scope.menuTree = transformMenu(menuTree, 'admin')
+    $scope.dropDownMenuVisible = false
+
+    $scope.dropDownHandler = () => {
+      $scope.dropDownMenuVisible = !$scope.dropDownMenuVisible
+    }
   }])
 
 

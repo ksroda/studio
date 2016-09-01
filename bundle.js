@@ -80,6 +80,49 @@
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
+	var menuTree = [{
+	  name: 'Strona główna',
+	  path: '#/',
+	  icon: 'fa-home',
+	  active: true,
+	  access: ['admin', 'teacher', 'student']
+	}, {
+	  name: 'Baza pytań',
+	  target: 'baza',
+	  submenu: [{
+	    name: 'Przeglądaj bazę pytań',
+	    path: '#/baza_pytan',
+	    access: ['admin', 'teacher', 'student']
+	  }, {
+	    name: 'Przeglądaj swoje pytania',
+	    path: '#/moje_pytania',
+	    access: ['admin', 'teacher']
+	  }, {
+	    name: 'Dodaj pytanie',
+	    path: '#/dodaj_pytanie',
+	    access: ['admin', 'teacher']
+	  }]
+	}, {
+	  name: 'Egzamin',
+	  target: 'egzamin',
+	  access: ['admin', 'teacher'],
+	  submenu: [{
+	    name: 'Aktualny egzamin',
+	    path: '#/aktualne_pytania'
+	  }, {
+	    name: 'Generuj nowy egzamin',
+	    path: '#/generuj_egzamin'
+	  }, {
+	    name: 'Generuj raporty',
+	    path: '#/generuj_raporty'
+	  }]
+	}, {
+	  name: 'Webcam',
+	  icon: 'fa-video-camera',
+	  path: '#/webcam',
+	  access: ['admin', 'teacher']
+	}];
+
 	_angular2.default.module('myApp', [_angularRoute2.default, _angularTranslate2.default, _angularContenteditable2.default, _angularMaterial2.default]).config(function ($routeProvider) {
 	  $routeProvider.when("/", {
 	    templateUrl: 'views/about.html'
@@ -158,15 +201,7 @@
 	    authorization: authorization,
 	    authentication: authentication
 	  };
-	})
-
-	// .run(['$rootScope', '$location', 'authService', function ($rootScope, $location, authService) {
-	//   $rootScope.$on('$routeChangeStart', function (event) {
-	//     authService.authorization()
-	//   })
-	// }])
-
-	.controller('myCtrl', ['$scope', '$translate', 'authService', '$location', function ($scope, $translate, authService, $location) {
+	}).controller('myCtrl', ['$scope', '$translate', 'authService', '$location', function ($scope, $translate, authService, $location) {
 	  $scope.visibleMenu = true;
 	  $scope.language = 'pl';
 	  $scope.languages = ['en', 'pl'];
@@ -182,53 +217,14 @@
 	    localStorage.removeItem('studioLogin');
 
 	    $location.path('/login').replace();
-	    // $scope.$apply()
 	  };
 
-	  var menuTree = [{
-	    name: 'Strona główna',
-	    path: '#/',
-	    icon: 'fa-home',
-	    active: true,
-	    access: ['admin', 'teacher', 'student']
-	  }, {
-	    name: 'Baza pytań',
-	    target: 'baza',
-	    submenu: [{
-	      name: 'Przeglądaj bazę pytań',
-	      path: '#/baza_pytan',
-	      access: ['admin', 'teacher', 'student']
-	    }, {
-	      name: 'Przeglądaj swoje pytania',
-	      path: '#/moje_pytania',
-	      access: ['admin', 'teacher']
-	    }, {
-	      name: 'Dodaj pytanie',
-	      path: '#/dodaj_pytanie',
-	      access: ['admin', 'teacher']
-	    }]
-	  }, {
-	    name: 'Egzamin',
-	    target: 'egzamin',
-	    access: ['admin', 'teacher'],
-	    submenu: [{
-	      name: 'Aktualny egzamin',
-	      path: '#/aktualne_pytania'
-	    }, {
-	      name: 'Generuj nowy egzamin',
-	      path: '#/generuj_egzamin'
-	    }, {
-	      name: 'Generuj raporty',
-	      path: '#/generuj_raporty'
-	    }]
-	  }, {
-	    name: 'Webcam',
-	    icon: 'fa-video-camera',
-	    path: '#/webcam',
-	    access: ['admin', 'teacher']
-	  }];
-
 	  $scope.menuTree = (0, _utils.transformMenu)(menuTree, 'admin');
+	  $scope.dropDownMenuVisible = false;
+
+	  $scope.dropDownHandler = function () {
+	    $scope.dropDownMenuVisible = !$scope.dropDownMenuVisible;
+	  };
 	}]).controller('login_controller', ['$scope', 'authService', function ($scope, authService) {
 	  $scope.visibleMenu = false;
 	  $scope.login = function () {
@@ -91324,40 +91320,25 @@
 	var cachedSetTimeout;
 	var cachedClearTimeout;
 
-	function defaultSetTimout() {
-	    throw new Error('setTimeout has not been defined');
-	}
-	function defaultClearTimeout () {
-	    throw new Error('clearTimeout has not been defined');
-	}
 	(function () {
 	    try {
-	        if (typeof setTimeout === 'function') {
-	            cachedSetTimeout = setTimeout;
-	        } else {
-	            cachedSetTimeout = defaultSetTimout;
-	        }
+	        cachedSetTimeout = setTimeout;
 	    } catch (e) {
-	        cachedSetTimeout = defaultSetTimout;
+	        cachedSetTimeout = function () {
+	            throw new Error('setTimeout is not defined');
+	        }
 	    }
 	    try {
-	        if (typeof clearTimeout === 'function') {
-	            cachedClearTimeout = clearTimeout;
-	        } else {
-	            cachedClearTimeout = defaultClearTimeout;
-	        }
+	        cachedClearTimeout = clearTimeout;
 	    } catch (e) {
-	        cachedClearTimeout = defaultClearTimeout;
+	        cachedClearTimeout = function () {
+	            throw new Error('clearTimeout is not defined');
+	        }
 	    }
 	} ())
 	function runTimeout(fun) {
 	    if (cachedSetTimeout === setTimeout) {
 	        //normal enviroments in sane situations
-	        return setTimeout(fun, 0);
-	    }
-	    // if setTimeout wasn't available but was latter defined
-	    if ((cachedSetTimeout === defaultSetTimout || !cachedSetTimeout) && setTimeout) {
-	        cachedSetTimeout = setTimeout;
 	        return setTimeout(fun, 0);
 	    }
 	    try {
@@ -91378,11 +91359,6 @@
 	function runClearTimeout(marker) {
 	    if (cachedClearTimeout === clearTimeout) {
 	        //normal enviroments in sane situations
-	        return clearTimeout(marker);
-	    }
-	    // if clearTimeout wasn't available but was latter defined
-	    if ((cachedClearTimeout === defaultClearTimeout || !cachedClearTimeout) && clearTimeout) {
-	        cachedClearTimeout = clearTimeout;
 	        return clearTimeout(marker);
 	    }
 	    try {
