@@ -40,15 +40,62 @@
 
 <body ng-app="myApp" ng-controller="myCtrl">
 
-    <div id="wrapper" class="border2">
+ <nav class="navbar">
+      <a class="navbar-brand"><img src="css/img/logo.png" id="logo"></a>
+      <ul id="menu" class="nav navbar-nav side-nav collapse navbar-collapse ">
+        <li ng-repeat="item in menuTree" ng-class="{ active: item.active }" class="">
+          <a href="{{ item.path }}" ng-if="!item.submenu" class="przycisk" aria-haspopup="true" aria-expanded="false">
+            <i ng-if="item.icon" class="fa fa-fw {{ item.icon }}"></i>{{ item.name }}
+          </a>
+          <a href="javascript:;" ng-if="item.submenu" data-toggle="dropdown" class="przycisk dropdown-toggle " aria-haspopup="true" aria-expanded="false"><i class="fa fa-fw fa-caret-down"></i>{{ item.name }} <!--usunelam data-target="#{{ item.target }}" -->
+          </a>
+          <ul id="{{ item.target }}" ng-if="item.submenu" class="dropdown-menu dropmenu">
+            <li ng-repeat="subItem in item.submenu" class="dropdown-header">
+              <a href="{{ subItem.path }}">{{ subItem.name }}</a>
+            </li>
+          </ul>
+        </li>
+      </ul>
+
+    <div class="navbar navbar-header navbar-text pull-right hamburger">
+
+    <div class="pull-left">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#menu" aria-expanded="false" aria-controls="navbar">
+        <span class="sr-only">Rozwiń nawigację</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+    </div>  
+      
+    <ul id="right-menu" class="nav navbar-right top-nav pull-right" ng-show="visibleMenu">
+      <li>
+        <select ng-options="language | translate for language in languages" ng-model="language" ng-change="updateLanguage()"></select>
+      </li>
+      <li class="dropdown">
+          <a class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa-user"></i> Profil <b class="caret"></b></a>
+          <ul class="dropdown-menu">
+              <li>
+                  <a href="#/profile"><i class="fa fa-fw fa-user"></i> Profil</a>
+              </li>
+              <li class="divider"></li>
+              <li>
+                  <a ng-click="logout()"><i class="fa fa-fw fa-power-off"></i> Wyloguj</a>
+              </li>
+          </ul>
+      </li>
+    </ul>
+
+    </div>
+    
+</nav>
+
 
          <!-- Navigation -->
-        <nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
-            <!-- Brand and toggle get grouped for better mobile display -->
+<!--         <nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
             <div class="navbar-header">
-               <a class="navbar-brand" href="#/">TYCHE - System Obsługi Egzaminu Inżynierskiego</a>
+               <a class="navbar-brand"><img src="css/img/logo.png" style="height: 50px;"></a>
             </div>
-            <!-- Top Menu Items -->
             <ul class="nav navbar-right top-nav" ng-show="visibleMenu">
 
                 <li class="dropdown">
@@ -65,33 +112,33 @@
                 </li>
             </ul>
 
-            <div>
-              <select ng-options="language | translate for language in languages" ng-model="language" ng-change="updateLanguage()"></select>
+           
+            <div class="collapse navbar-collapse navbar-ex1-collapse" ng-show="visibleMenu">
+              <ul class="nav navbar-nav side-nav">
+                <li ng-repeat="item in menuTree" ng-class="{ active: item.active }">
+                  <a href="{{ item.path }}" ng-if="!item.submenu">
+                    <i ng-if="item.icon" class="fa fa-fw {{ item.icon }}"></i>
+                    {{ item.name }}
+                  </a>
+                  <a href="javascript:;" ng-if="item.submenu" data-toggle="collapse" data-target="#{{ item.target }}"><i class="fa fa-fw fa-caret-down"></i>{{ item.name }}</a>
+                  <ul id="{{ item.target }}" ng-if="item.submenu" class="collapse">
+                    <li ng-repeat="subItem in item.submenu">
+                      <a href="{{ subItem.path }}">{{ subItem.name }}</a>
+                    </li>
+                  </ul>
+                </li>
+              </ul>
+
+
+             <div class="navbar-right">
+                <select ng-options="language | translate for language in languages" ng-model="language" ng-change="updateLanguage()"></select>
              </div>
 
+        </div>
 
-            <!-- Sidebar Menu Items - These collapse to the responsive navigation menu on small screens -->
-<div class="collapse navbar-collapse navbar-ex1-collapse" ng-show="visibleMenu">
-  <ul class="nav navbar-nav side-nav">
-    <li ng-repeat="item in menuTree" ng-class="{ active: item.active }">
-      <a href="{{ item.path }}" ng-if="!item.submenu">
-        <i ng-if="item.icon" class="fa fa-fw {{ item.icon }}"></i>
-        {{ item.name }}
-      </a>
-      <a href="javascript:;" ng-if="item.submenu" data-toggle="collapse" data-target="#{{ item.target }}"><i class="fa fa-fw fa-caret-down"></i>{{ item.name }}</a>
-      <ul id="{{ item.target }}" ng-if="item.submenu" class="collapse">
-        <li ng-repeat="subItem in item.submenu">
-          <a href="{{ subItem.path }}">{{ subItem.name }}</a>
-        </li>
-      </ul>
-    </li>
-  </ul>
-</div>
-
-            <!-- /.navbar-collapse -->
-        </nav>
-
-        <div ng-view id="page-wrapper" class="border2"></div>
+        </nav> 
+ -->
+  <div ng-view id="content"></div>
 
         <script src="bundle.js"></script>
 

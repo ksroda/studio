@@ -70,13 +70,13 @@
 
 	var _angularContenteditable2 = _interopRequireDefault(_angularContenteditable);
 
-	var _utils = __webpack_require__(41);
+	var _utils = __webpack_require__(16);
 
-	var _api = __webpack_require__(16);
+	var _api = __webpack_require__(17);
 
 	var _api2 = _interopRequireDefault(_api);
 
-	var _camera = __webpack_require__(40);
+	var _camera = __webpack_require__(41);
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -90497,6 +90497,36 @@
 
 /***/ },
 /* 16 */
+/***/ function(module, exports) {
+
+	"use strict";
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+
+	var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+	exports.transformMenu = transformMenu;
+
+	function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
+
+	function transformMenu(menu, role) {
+	  return menu.reduce(function (acc, curr) {
+	    var filteredSubmenu = curr.submenu ? curr.submenu.filter(function (item) {
+	      return item.access && item.access.includes(role);
+	    }) : [];
+	    if (filteredSubmenu.length > 0) {
+	      return [].concat(_toConsumableArray(acc), [_extends({}, curr, { submenu: filteredSubmenu })]);
+	    } else {
+	      var canAccess = curr.access ? curr.access.includes(role) : false;
+	      return canAccess ? [].concat(_toConsumableArray(acc), [curr]) : acc;
+	    }
+	  }, []);
+	}
+
+/***/ },
+/* 17 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -90507,7 +90537,7 @@
 
 	var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
-	var _axios = __webpack_require__(17);
+	var _axios = __webpack_require__(18);
 
 	var _axios2 = _interopRequireDefault(_axios);
 
@@ -90578,20 +90608,20 @@
 	exports.default = api;
 
 /***/ },
-/* 17 */
+/* 18 */
 /***/ function(module, exports, __webpack_require__) {
 
-	module.exports = __webpack_require__(18);
+	module.exports = __webpack_require__(19);
 
 /***/ },
-/* 18 */
+/* 19 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var utils = __webpack_require__(19);
-	var bind = __webpack_require__(20);
-	var Axios = __webpack_require__(21);
+	var utils = __webpack_require__(20);
+	var bind = __webpack_require__(21);
+	var Axios = __webpack_require__(22);
 
 	/**
 	 * Create an instance of Axios
@@ -90627,16 +90657,16 @@
 	axios.all = function all(promises) {
 	  return Promise.all(promises);
 	};
-	axios.spread = __webpack_require__(39);
+	axios.spread = __webpack_require__(40);
 
 
 /***/ },
-/* 19 */
+/* 20 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var bind = __webpack_require__(20);
+	var bind = __webpack_require__(21);
 
 	/*global toString:true*/
 
@@ -90936,7 +90966,7 @@
 
 
 /***/ },
-/* 20 */
+/* 21 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -90953,17 +90983,17 @@
 
 
 /***/ },
-/* 21 */
+/* 22 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var defaults = __webpack_require__(22);
-	var utils = __webpack_require__(19);
-	var InterceptorManager = __webpack_require__(24);
-	var dispatchRequest = __webpack_require__(25);
-	var isAbsoluteURL = __webpack_require__(37);
-	var combineURLs = __webpack_require__(38);
+	var defaults = __webpack_require__(23);
+	var utils = __webpack_require__(20);
+	var InterceptorManager = __webpack_require__(25);
+	var dispatchRequest = __webpack_require__(26);
+	var isAbsoluteURL = __webpack_require__(38);
+	var combineURLs = __webpack_require__(39);
 
 	/**
 	 * Create a new instance of Axios
@@ -91044,13 +91074,13 @@
 
 
 /***/ },
-/* 22 */
+/* 23 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var utils = __webpack_require__(19);
-	var normalizeHeaderName = __webpack_require__(23);
+	var utils = __webpack_require__(20);
+	var normalizeHeaderName = __webpack_require__(24);
 
 	var PROTECTION_PREFIX = /^\)\]\}',?\n/;
 	var DEFAULT_CONTENT_TYPE = {
@@ -91122,12 +91152,12 @@
 
 
 /***/ },
-/* 23 */
+/* 24 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var utils = __webpack_require__(19);
+	var utils = __webpack_require__(20);
 
 	module.exports = function normalizeHeaderName(headers, normalizedName) {
 	  utils.forEach(headers, function processHeader(value, name) {
@@ -91140,12 +91170,12 @@
 
 
 /***/ },
-/* 24 */
+/* 25 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var utils = __webpack_require__(19);
+	var utils = __webpack_require__(20);
 
 	function InterceptorManager() {
 	  this.handlers = [];
@@ -91198,13 +91228,13 @@
 
 
 /***/ },
-/* 25 */
+/* 26 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {'use strict';
 
-	var utils = __webpack_require__(19);
-	var transformData = __webpack_require__(27);
+	var utils = __webpack_require__(20);
+	var transformData = __webpack_require__(28);
 
 	/**
 	 * Dispatch a request to the server using whichever adapter
@@ -91245,10 +91275,10 @@
 	    adapter = config.adapter;
 	  } else if (typeof XMLHttpRequest !== 'undefined') {
 	    // For browsers use XHR adapter
-	    adapter = __webpack_require__(28);
+	    adapter = __webpack_require__(29);
 	  } else if (typeof process !== 'undefined') {
 	    // For node use HTTP adapter
-	    adapter = __webpack_require__(28);
+	    adapter = __webpack_require__(29);
 	  }
 
 	  return Promise.resolve(config)
@@ -91277,10 +91307,10 @@
 	    });
 	};
 
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(26)))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(27)))
 
 /***/ },
-/* 26 */
+/* 27 */
 /***/ function(module, exports) {
 
 	// shim for using process in browser
@@ -91294,25 +91324,40 @@
 	var cachedSetTimeout;
 	var cachedClearTimeout;
 
+	function defaultSetTimout() {
+	    throw new Error('setTimeout has not been defined');
+	}
+	function defaultClearTimeout () {
+	    throw new Error('clearTimeout has not been defined');
+	}
 	(function () {
 	    try {
-	        cachedSetTimeout = setTimeout;
-	    } catch (e) {
-	        cachedSetTimeout = function () {
-	            throw new Error('setTimeout is not defined');
+	        if (typeof setTimeout === 'function') {
+	            cachedSetTimeout = setTimeout;
+	        } else {
+	            cachedSetTimeout = defaultSetTimout;
 	        }
+	    } catch (e) {
+	        cachedSetTimeout = defaultSetTimout;
 	    }
 	    try {
-	        cachedClearTimeout = clearTimeout;
-	    } catch (e) {
-	        cachedClearTimeout = function () {
-	            throw new Error('clearTimeout is not defined');
+	        if (typeof clearTimeout === 'function') {
+	            cachedClearTimeout = clearTimeout;
+	        } else {
+	            cachedClearTimeout = defaultClearTimeout;
 	        }
+	    } catch (e) {
+	        cachedClearTimeout = defaultClearTimeout;
 	    }
 	} ())
 	function runTimeout(fun) {
 	    if (cachedSetTimeout === setTimeout) {
 	        //normal enviroments in sane situations
+	        return setTimeout(fun, 0);
+	    }
+	    // if setTimeout wasn't available but was latter defined
+	    if ((cachedSetTimeout === defaultSetTimout || !cachedSetTimeout) && setTimeout) {
+	        cachedSetTimeout = setTimeout;
 	        return setTimeout(fun, 0);
 	    }
 	    try {
@@ -91333,6 +91378,11 @@
 	function runClearTimeout(marker) {
 	    if (cachedClearTimeout === clearTimeout) {
 	        //normal enviroments in sane situations
+	        return clearTimeout(marker);
+	    }
+	    // if clearTimeout wasn't available but was latter defined
+	    if ((cachedClearTimeout === defaultClearTimeout || !cachedClearTimeout) && clearTimeout) {
+	        cachedClearTimeout = clearTimeout;
 	        return clearTimeout(marker);
 	    }
 	    try {
@@ -91446,12 +91496,12 @@
 
 
 /***/ },
-/* 27 */
+/* 28 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var utils = __webpack_require__(19);
+	var utils = __webpack_require__(20);
 
 	/**
 	 * Transform the data for a request or a response
@@ -91472,18 +91522,18 @@
 
 
 /***/ },
-/* 28 */
+/* 29 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {'use strict';
 
-	var utils = __webpack_require__(19);
-	var settle = __webpack_require__(29);
-	var buildURL = __webpack_require__(32);
-	var parseHeaders = __webpack_require__(33);
-	var isURLSameOrigin = __webpack_require__(34);
-	var createError = __webpack_require__(30);
-	var btoa = (typeof window !== 'undefined' && window.btoa) || __webpack_require__(35);
+	var utils = __webpack_require__(20);
+	var settle = __webpack_require__(30);
+	var buildURL = __webpack_require__(33);
+	var parseHeaders = __webpack_require__(34);
+	var isURLSameOrigin = __webpack_require__(35);
+	var createError = __webpack_require__(31);
+	var btoa = (typeof window !== 'undefined' && window.btoa) || __webpack_require__(36);
 
 	module.exports = function xhrAdapter(config) {
 	  return new Promise(function dispatchXhrRequest(resolve, reject) {
@@ -91577,7 +91627,7 @@
 	    // This is only done if running in a standard browser environment.
 	    // Specifically not if we're in a web worker, or react-native.
 	    if (utils.isStandardBrowserEnv()) {
-	      var cookies = __webpack_require__(36);
+	      var cookies = __webpack_require__(37);
 
 	      // Add xsrf header
 	      var xsrfValue = config.withCredentials || isURLSameOrigin(config.url) ?
@@ -91636,15 +91686,15 @@
 	  });
 	};
 
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(26)))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(27)))
 
 /***/ },
-/* 29 */
+/* 30 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var createError = __webpack_require__(30);
+	var createError = __webpack_require__(31);
 
 	/**
 	 * Resolve or reject a Promise based on response status.
@@ -91670,12 +91720,12 @@
 
 
 /***/ },
-/* 30 */
+/* 31 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var enhanceError = __webpack_require__(31);
+	var enhanceError = __webpack_require__(32);
 
 	/**
 	 * Create an Error with the specified message, config, error code, and response.
@@ -91693,7 +91743,7 @@
 
 
 /***/ },
-/* 31 */
+/* 32 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -91718,12 +91768,12 @@
 
 
 /***/ },
-/* 32 */
+/* 33 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var utils = __webpack_require__(19);
+	var utils = __webpack_require__(20);
 
 	function encode(val) {
 	  return encodeURIComponent(val).
@@ -91792,12 +91842,12 @@
 
 
 /***/ },
-/* 33 */
+/* 34 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var utils = __webpack_require__(19);
+	var utils = __webpack_require__(20);
 
 	/**
 	 * Parse headers into an object
@@ -91835,12 +91885,12 @@
 
 
 /***/ },
-/* 34 */
+/* 35 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var utils = __webpack_require__(19);
+	var utils = __webpack_require__(20);
 
 	module.exports = (
 	  utils.isStandardBrowserEnv() ?
@@ -91909,7 +91959,7 @@
 
 
 /***/ },
-/* 35 */
+/* 36 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -91951,12 +92001,12 @@
 
 
 /***/ },
-/* 36 */
+/* 37 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var utils = __webpack_require__(19);
+	var utils = __webpack_require__(20);
 
 	module.exports = (
 	  utils.isStandardBrowserEnv() ?
@@ -92010,7 +92060,7 @@
 
 
 /***/ },
-/* 37 */
+/* 38 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -92030,7 +92080,7 @@
 
 
 /***/ },
-/* 38 */
+/* 39 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -92048,7 +92098,7 @@
 
 
 /***/ },
-/* 39 */
+/* 40 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -92081,7 +92131,7 @@
 
 
 /***/ },
-/* 40 */
+/* 41 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -92092,7 +92142,7 @@
 	exports.runCamera = runCamera;
 	exports.stopCamera = stopCamera;
 
-	var _api = __webpack_require__(16);
+	var _api = __webpack_require__(17);
 
 	var _api2 = _interopRequireDefault(_api);
 
@@ -92178,36 +92228,6 @@
 	    imageData.data[i + 2] = data.b;
 	    imageData.data[i + 3] = data.a;
 	  }
-	}
-
-/***/ },
-/* 41 */
-/***/ function(module, exports) {
-
-	"use strict";
-
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-
-	var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
-
-	exports.transformMenu = transformMenu;
-
-	function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
-
-	function transformMenu(menu, role) {
-	  return menu.reduce(function (acc, curr) {
-	    var filteredSubmenu = curr.submenu ? curr.submenu.filter(function (item) {
-	      return item.access && item.access.includes(role);
-	    }) : [];
-	    if (filteredSubmenu.length > 0) {
-	      return [].concat(_toConsumableArray(acc), [_extends({}, curr, { submenu: filteredSubmenu })]);
-	    } else {
-	      var canAccess = curr.access ? curr.access.includes(role) : false;
-	      return canAccess ? [].concat(_toConsumableArray(acc), [curr]) : acc;
-	    }
-	  }, []);
 	}
 
 /***/ }

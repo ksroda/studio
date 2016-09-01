@@ -1,0 +1,104 @@
+0 info it worked if it ends with ok
+1 verbose cli [ 'node', '/usr/local/bin/npm', 'install' ]
+2 info using npm@2.0.0
+3 info using node@v0.12.15
+4 verbose node symlink /usr/bin/node
+5 warn package.json studio@1.0.0 No description
+6 warn package.json studio@1.0.0 No repository field.
+7 verbose readDependencies using package.json deps
+8 verbose install where, deps [ '/home/paulina/studio',
+8 verbose install   [ 'angular',
+8 verbose install     'angular-animate',
+8 verbose install     'angular-aria',
+8 verbose install     'angular-contenteditable',
+8 verbose install     'angular-material',
+8 verbose install     'angular-route',
+8 verbose install     'angular-translate',
+8 verbose install     'axios',
+8 verbose install     'lodash',
+8 verbose install     'webpack',
+8 verbose install     'babel-cli',
+8 verbose install     'babel-core',
+8 verbose install     'babel-loader',
+8 verbose install     'babel-preset-es2015',
+8 verbose install     'webpack-uglify-js-plugin' ] ]
+9 info preinstall studio@1.0.0
+10 warn package.json angular-contenteditable@0.0.2 No repository field.
+11 verbose readDependencies using package.json deps
+12 verbose already installed skipping webpack@^1.13.2 /home/paulina/studio
+13 verbose already installed skipping babel-cli@^6.11.4 /home/paulina/studio
+14 verbose already installed skipping babel-core@^6.13.2 /home/paulina/studio
+15 verbose already installed skipping babel-loader@^6.2.5 /home/paulina/studio
+16 verbose already installed skipping babel-preset-es2015@^6.13.2 /home/paulina/studio
+17 verbose already installed skipping webpack-uglify-js-plugin@^1.1.9 /home/paulina/studio
+18 verbose already installed skipping angular@^1.5.8 /home/paulina/studio
+19 verbose already installed skipping angular-animate@^1.5.8 /home/paulina/studio
+20 verbose already installed skipping angular-aria@^1.5.8 /home/paulina/studio
+21 verbose already installed skipping angular-contenteditable@0.0.2 /home/paulina/studio
+22 verbose already installed skipping angular-material@^1.1.0 /home/paulina/studio
+23 verbose already installed skipping angular-route@^1.5.8 /home/paulina/studio
+24 verbose already installed skipping angular-translate@^2.11.1 /home/paulina/studio
+25 verbose already installed skipping axios@^0.13.1 /home/paulina/studio
+26 verbose already installed skipping lodash@^4.15.0 /home/paulina/studio
+27 silly resolved []
+28 info build /home/paulina/studio
+29 verbose linkStuff [ false, false, false, '/home/paulina' ]
+30 info linkStuff studio@1.0.0
+31 verbose linkBins studio@1.0.0
+32 verbose linkMans studio@1.0.0
+33 verbose rebuildBundles studio@1.0.0
+34 verbose rebuildBundles [ '.bin',
+34 verbose rebuildBundles   'angular',
+34 verbose rebuildBundles   'angular-animate',
+34 verbose rebuildBundles   'angular-aria',
+34 verbose rebuildBundles   'angular-contenteditable',
+34 verbose rebuildBundles   'angular-material',
+34 verbose rebuildBundles   'angular-route',
+34 verbose rebuildBundles   'angular-translate',
+34 verbose rebuildBundles   'axios',
+34 verbose rebuildBundles   'babel',
+34 verbose rebuildBundles   'babel-cli',
+34 verbose rebuildBundles   'babel-core',
+34 verbose rebuildBundles   'babel-loader',
+34 verbose rebuildBundles   'babel-preset-es2015',
+34 verbose rebuildBundles   'babel-runtime',
+34 verbose rebuildBundles   'lodash',
+34 verbose rebuildBundles   'webpack',
+34 verbose rebuildBundles   'webpack-uglify-js-plugin' ]
+35 verbose rebuild bundle /home/paulina/studio/node_modules/babel
+36 info build /home/paulina/studio/node_modules/babel
+37 info preinstall babel@6.5.2
+38 verbose linkStuff [ false, false, false, '/home/paulina/studio/node_modules' ]
+39 info linkStuff babel@6.5.2
+40 verbose linkBins babel@6.5.2
+41 verbose link bins [ { babel: './cli.js',
+41 verbose link bins     'babel-node': './cli.js',
+41 verbose link bins     'babel-external-helpers': './cli.js' },
+41 verbose link bins   '/home/paulina/studio/node_modules/.bin',
+41 verbose link bins   false ]
+42 verbose linkMans babel@6.5.2
+43 verbose rebuildBundles babel@6.5.2
+44 verbose gentlyRm vacuuming /home/paulina/studio/node_modules/.bin/babel
+45 verbose gentlyRm vacuuming /home/paulina/studio/node_modules/.bin/babel-node
+46 verbose gentlyRm vacuuming /home/paulina/studio/node_modules/.bin/babel-external-helpers
+47 silly gentlyRm purging /home/paulina/studio/node_modules/.bin/babel
+48 silly gentlyRm purging /home/paulina/studio/node_modules/.bin/babel-external-helpers
+49 silly gentlyRm purging /home/paulina/studio/node_modules/.bin/babel-node
+50 verbose stack Error: EACCES, unlink '/home/paulina/studio/node_modules/.bin/babel'
+50 verbose stack     at Error (native)
+51 verbose cwd /home/paulina/studio
+52 error Linux 3.13.0-95-generic
+53 error argv "node" "/usr/local/bin/npm" "install"
+54 error node v0.12.15
+55 error npm  v2.0.0
+56 error path /home/paulina/studio/node_modules/.bin/babel
+57 error code EACCES
+58 error errno -13
+59 error Error: EACCES, unlink '/home/paulina/studio/node_modules/.bin/babel'
+59 error     at Error (native)
+59 error  { [Error: EACCES, unlink '/home/paulina/studio/node_modules/.bin/babel']
+59 error   errno: -13,
+59 error   code: 'EACCES',
+59 error   path: '/home/paulina/studio/node_modules/.bin/babel' }
+60 error Please try running this command again as root/Administrator.
+61 verbose exit [ -13, true ]
