@@ -13,3 +13,14 @@ export function transformMenu (menu, role) {
     }
   }, [])
 }
+
+export function getSubmenus (menu) {
+  return menu.reduce((acc, curr) => ({
+    ...acc,
+    ...(
+      curr.target
+        ? { [curr.target]: false }
+        : null
+    )
+  }), [])
+}

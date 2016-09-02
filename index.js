@@ -5,7 +5,7 @@ import angularMaterial from 'angular-material'
 import angularTranslate from 'angular-translate'
 import angularContenteditable from 'angular-contenteditable'
 
-import { transformMenu } from './utils'
+import { transformMenu, getSubmenus } from './utils'
 import API from './api'
 
 import { runCamera, stopCamera, captureImage } from './camera'
@@ -13,7 +13,7 @@ import { runCamera, stopCamera, captureImage } from './camera'
 const menuTree = [
   {
     name: 'Strona główna',
-    path: '#/',
+    path: '/',
     icon: 'fa-home',
     active: true,
     access: ['admin', 'teacher', 'student']
@@ -23,12 +23,12 @@ const menuTree = [
     target: 'baza',
     submenu: [
       {
-        name: 'Przeglądaj bazę pytań',
+        name: 'Przeglądaj',
         path: '#/baza_pytan',
         access: ['admin', 'teacher', 'student']
       },
       {
-        name: 'Przeglądaj swoje pytania',
+        name: 'Moje pytania',
         path: '#/moje_pytania',
         access: ['admin', 'teacher']
       },
@@ -61,7 +61,7 @@ const menuTree = [
   {
     name: 'Webcam',
     icon: 'fa-video-camera',
-    path: '#/webcam',
+    path: '/webcam',
     access: ['admin', 'teacher']
   }
 ]
@@ -164,6 +164,11 @@ angular.module('myApp', [angularRoute, angularTranslate, angularContenteditable,
   })
 
   .controller('myCtrl', ['$scope', '$translate', 'authService', '$location', function ($scope, $translate, authService, $location) {
+    $scope.goToPath = (path) => {
+      console.log(path)
+      $location.path(path)
+    }
+
     $scope.visibleMenu = true
     $scope.language = 'pl'
     $scope.languages = ['en', 'pl']
@@ -187,6 +192,24 @@ angular.module('myApp', [angularRoute, angularTranslate, angularContenteditable,
     $scope.dropDownHandler = () => {
       $scope.dropDownMenuVisible = !$scope.dropDownMenuVisible
     }
+
+    $scope.submenus = getSubmenus(menuTree)
+
+    $scope.submenuHandler = (target, bool) => {
+      $scope.submenus[target] = bool !== undefined ? bool : !$scope.submenus[target]
+    }
+
+    $scope.toolbarShadow = false
+
+    window.addEventListener('scroll', function (e) {
+      $scope.$apply(function () {
+        if (window.scrollY === 0) {
+          $scope.toolbarShadow = false
+        } else {
+          $scope.toolbarShadow = true
+        }
+      })
+    })
   }])
 
 
