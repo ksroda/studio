@@ -4,10 +4,10 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "python -m SimpleHTTPServer",
+    "start": "webpack-dev-server --host 0.0.0.0 --inline --hot",
     "webpack": "webpack --watch",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "concurrently \"npm start\" \"npm run webpack\""
+    "dev": "concurrently \"npm start\""
   },
   "author": "",
   "license": "ISC",
@@ -22,13 +22,16 @@
     "axios": "^0.13.1",
     "concurrently": "^2.2.0",
     "lodash": "^4.15.0",
-    "webpack": "^1.13.2"
+    "webpack": "^1.13.2",
+    "webpack-dev-server": "^1.15.1"
   },
   "devDependencies": {
     "babel-cli": "^6.11.4",
     "babel-core": "^6.13.2",
     "babel-loader": "^6.2.5",
     "babel-preset-es2015": "^6.13.2",
+    "css-loader": "^0.24.0",
+    "style-loader": "^0.13.1",
     "webpack-uglify-js-plugin": "^1.1.9"
   }
 }

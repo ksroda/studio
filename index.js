@@ -4,6 +4,7 @@ import angularRoute from 'angular-route'
 import angularMaterial from 'angular-material'
 import angularTranslate from 'angular-translate'
 import angularContenteditable from 'angular-contenteditable'
+require("./tyche2.css");
 
 import { transformMenu, getSubmenus } from './utils'
 import API from './api'
@@ -203,7 +204,7 @@ angular.module('myApp', [angularRoute, angularTranslate, angularContenteditable,
 
     window.addEventListener('scroll', function (e) {
       $scope.$apply(function () {
-        if (window.scrollY === 0) {
+        if (window.scrollY <= 0) {
           $scope.toolbarShadow = false
         } else {
           $scope.toolbarShadow = true
