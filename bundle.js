@@ -82,7 +82,7 @@
 
 	var menuTree = [{
 	  name: 'Strona główna',
-	  path: '#/',
+	  path: '/',
 	  icon: 'fa-home',
 	  active: true,
 	  access: ['admin', 'teacher', 'student']
@@ -90,11 +90,11 @@
 	  name: 'Baza pytań',
 	  target: 'baza',
 	  submenu: [{
-	    name: 'Przeglądaj bazę pytań',
+	    name: 'Przeglądaj',
 	    path: '#/baza_pytan',
 	    access: ['admin', 'teacher', 'student']
 	  }, {
-	    name: 'Przeglądaj swoje pytania',
+	    name: 'Moje pytania',
 	    path: '#/moje_pytania',
 	    access: ['admin', 'teacher']
 	  }, {
@@ -119,7 +119,7 @@
 	}, {
 	  name: 'Webcam',
 	  icon: 'fa-video-camera',
-	  path: '#/webcam',
+	  path: '/webcam',
 	  access: ['admin', 'teacher']
 	}];
 
@@ -202,6 +202,11 @@
 	    authentication: authentication
 	  };
 	}).controller('myCtrl', ['$scope', '$translate', 'authService', '$location', function ($scope, $translate, authService, $location) {
+	  $scope.goToPath = function (path) {
+	    console.log(path);
+	    $location.path(path);
+	  };
+
 	  $scope.visibleMenu = true;
 	  $scope.language = 'pl';
 	  $scope.languages = ['en', 'pl'];
@@ -225,6 +230,24 @@
 	  $scope.dropDownHandler = function () {
 	    $scope.dropDownMenuVisible = !$scope.dropDownMenuVisible;
 	  };
+
+	  $scope.submenus = (0, _utils.getSubmenus)(menuTree);
+
+	  $scope.submenuHandler = function (target, bool) {
+	    $scope.submenus[target] = bool !== undefined ? bool : !$scope.submenus[target];
+	  };
+
+	  $scope.toolbarShadow = false;
+
+	  window.addEventListener('scroll', function (e) {
+	    $scope.$apply(function () {
+	      if (window.scrollY === 0) {
+	        $scope.toolbarShadow = false;
+	      } else {
+	        $scope.toolbarShadow = true;
+	      }
+	    });
+	  });
 	}]).controller('login_controller', ['$scope', 'authService', function ($scope, authService) {
 	  $scope.visibleMenu = false;
 	  $scope.login = function () {
@@ -90504,6 +90527,9 @@
 	var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
 	exports.transformMenu = transformMenu;
+	exports.getSubmenus = getSubmenus;
+
+	function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
 	function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
 
@@ -90518,6 +90544,12 @@
 	      var canAccess = curr.access ? curr.access.includes(role) : false;
 	      return canAccess ? [].concat(_toConsumableArray(acc), [curr]) : acc;
 	    }
+	  }, []);
+	}
+
+	function getSubmenus(menu) {
+	  return menu.reduce(function (acc, curr) {
+	    return _extends({}, acc, curr.target ? _defineProperty({}, curr.target, false) : null);
 	  }, []);
 	}
 
@@ -91320,25 +91352,40 @@
 	var cachedSetTimeout;
 	var cachedClearTimeout;
 
+	function defaultSetTimout() {
+	    throw new Error('setTimeout has not been defined');
+	}
+	function defaultClearTimeout () {
+	    throw new Error('clearTimeout has not been defined');
+	}
 	(function () {
 	    try {
-	        cachedSetTimeout = setTimeout;
-	    } catch (e) {
-	        cachedSetTimeout = function () {
-	            throw new Error('setTimeout is not defined');
+	        if (typeof setTimeout === 'function') {
+	            cachedSetTimeout = setTimeout;
+	        } else {
+	            cachedSetTimeout = defaultSetTimout;
 	        }
+	    } catch (e) {
+	        cachedSetTimeout = defaultSetTimout;
 	    }
 	    try {
-	        cachedClearTimeout = clearTimeout;
-	    } catch (e) {
-	        cachedClearTimeout = function () {
-	            throw new Error('clearTimeout is not defined');
+	        if (typeof clearTimeout === 'function') {
+	            cachedClearTimeout = clearTimeout;
+	        } else {
+	            cachedClearTimeout = defaultClearTimeout;
 	        }
+	    } catch (e) {
+	        cachedClearTimeout = defaultClearTimeout;
 	    }
 	} ())
 	function runTimeout(fun) {
 	    if (cachedSetTimeout === setTimeout) {
 	        //normal enviroments in sane situations
+	        return setTimeout(fun, 0);
+	    }
+	    // if setTimeout wasn't available but was latter defined
+	    if ((cachedSetTimeout === defaultSetTimout || !cachedSetTimeout) && setTimeout) {
+	        cachedSetTimeout = setTimeout;
 	        return setTimeout(fun, 0);
 	    }
 	    try {
@@ -91359,6 +91406,11 @@
 	function runClearTimeout(marker) {
 	    if (cachedClearTimeout === clearTimeout) {
 	        //normal enviroments in sane situations
+	        return clearTimeout(marker);
+	    }
+	    // if clearTimeout wasn't available but was latter defined
+	    if ((cachedClearTimeout === defaultClearTimeout || !cachedClearTimeout) && clearTimeout) {
+	        cachedClearTimeout = clearTimeout;
 	        return clearTimeout(marker);
 	    }
 	    try {

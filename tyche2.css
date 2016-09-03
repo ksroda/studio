@@ -1,19 +1,22 @@
 body {
   margin: 0;
+  font-family: Lato;
 }
 
 .toolbar {
   position: fixed;
   width: 100%;
   height: auto;
-  border: 1px solid black;
+  /*border-bottom: 1px solid black;*/
   display: flex;
   flex-wrap: wrap;
   align-items: center;
+  background-color: white;
+  z-index: 1000;
 }
 
 .logo {
-  border: 1px solid black;
+  /*border: 1px solid black;*/
   text-align: center;
   display: flex;
   /*align-items: center;*/
@@ -25,36 +28,103 @@ body {
 }
 
 .dropDownMenuButton {
-  width: 50px;
-  height: 50px;
+  padding: 20px;
+}
+
+.dropDownMenuButton > button {
+  /*width: 30px;*/
+  /*height: 0px;*/
+}
+
+li > a { 
+  color: white;
+  text-decoration: none;
 }
 
 .menuItem {
-  border: 1px solid black;
+  /*border: 1px solid black;*/
   transition: height ease 0.4s;
   padding: 20px 20px;
+  position: relative;
 }
 
 .tools {
   display: flex;
-  border: 1px solid red;
+  /*border: 1px solid red;*/
   justify-content: flex-end;
 }
 
 .toolsItem {
   padding: 20px 20px;
-  border: 1px solid black;
+  /*border: 1px solid black;*/
 }
 
-.toolbar {
-  transition: height ease 0.4s;
-  overflow: hidden;
+.menuItem, .toolsItem {
+  transition: all linear 0.1s;
+  color: #494E6B;
+  cursor: pointer;
 }
 
-@media (min-width: 769px) {
+.menuItem:hover {
+  background-color: #494E6B;
+  color: white;
+}
+
+.toolsItem:hover {
+  background-color: #985E6D;
+  color: white;
+}
+
+ul {
+  list-style-type: none;
+  padding: 0px 20px;
+}
+
+li {
+  margin-bottom: 10px;
+}
+
+.showShadow {
+  box-shadow: 0px 3px 15px #888888;
+}
+
+li:first-of-type {
+    margin-top: 10px;
+  }
+
+li:last-of-type {
+  margin-bottom: 0px;
+}
+
+a:hover{
+  color: white;
+  text-decoration-style: none;
+}
+
+
+@media (min-width: 801px) {
+  .submenu {
+    background-color: #494E6B;
+    color: white;
+  }
+
+  .menuItem:hover, .toolsItem:hover {
+    border-bottom: 3px solid #98878F;
+  }
+
+  .menuItemNoBorder:hover {
+    border-bottom: none;
+  }
+
   .dropDownMenuButton {
     display: none;
   }
+
+  .toolbar {
+    height: 60px;
+  }
+
+  
 
   .img {
     padding-left: 20px;
@@ -66,31 +136,67 @@ body {
 
   .menu {
     flex: 3;
+    height: 100%;
   }
 
   .tools {
-    flex: 2;
+    flex: 1;
+    height: 100%;
+  }
+
+  .submenu {
+    /*border: 1px solid black;*/
+    width: 200px;
+    max-height: 200px;
+    position: absolute;
+    left: 0;
+    top: 59px;
+    overflow: hidden;
+    transition: max-height ease 0.3s;
+  }
+
+  .submenuItemHidden {
+    max-height: 0px;
+  }
+
+  .borderBottom {
+    border-bottom: 3px solid #98878F;
+  }
+
+  #content {
+    padding: 80px 40px;
   }
 }
 
-@media (max-width: 768px) {
+@media (max-width: 800px) {
+  
+
+  .menuItem:hover, .toolsItem:hover {
+    border-left: 5px solid #98878F;
+  }
+
   .dropDownMenuButton {
     display: block;
   }
 
   .toolbarVisible {
-    height: 350px;
+    max-height: 400px;
   }
 
   .toolbarHidden {
-    height: 50px;
+    max-height: 60px;
+  }
+
+  .toolbar {
+    transition: max-height ease 0.4s;
+    overflow: hidden;
   }
 
   .img {
     position: relative;
-    left: 50%;
+    left: 42%;
     transform: translate(-50%, 0);
-    padding-right: 80px;
+    margin-top: 5px;
   }
 
   .logo {
@@ -101,8 +207,9 @@ body {
     width: 100%;
   }
 
-  .menuItem {
+  .menuItem, .toolsItem {
     width: 100%;
+    padding: 10px 20px;
   }
 
   .tools {
@@ -117,5 +224,24 @@ body {
   .toolsItem:last-of-type {
     flex: 5;
     order: 1;
+  }
+
+  #content {
+    padding: 60px 40px;
+  }
+
+  .submenu {
+    color: white;
+  }
+
+  .submenu {
+    width: 100%;
+    overflow: hidden;
+    transition: max-height ease 0.3s;
+    max-height: 300px;
+  }
+
+  .submenuItemHidden {
+    max-height: 0px;
   }
 }
