@@ -1,21 +1,22 @@
 import axios from 'axios'
+import qs from 'qs'
 
 const protocol = 'http'
-const host = 'localhost'
-const port = '3000'
+const host = '176.115.10.86'
+const port = '9000'
 
 const baseURL = `${protocol}://${host}:${port}`
 
 const getPromise = (url, data, method) => axios({
   method: method || 'get',
   url,
-  [method === 'post' ? 'data' : 'params']: data,
+  [method === 'post' ? 'data' : 'params']: qs.stringify(data),
   ...(
     sessionStorage.getItem('studioToken') || localStorage.getItem('studioToken')
       ?
         {
           headers: {
-            'TycheAT': sessionStorage.getItem('studioToken') || localStorage.getItem('studioToken')
+            'Authorization': `Bearer ${sessionStorage.getItem('studioToken') || localStorage.getItem('studioToken')}`
           }
         }
       : {}
@@ -27,7 +28,7 @@ const api = {
     post: data => getPromise(`${baseURL}/auth`, data, 'post')
   },
   login: {
-    post: data => getPromise(`${baseURL}/login`, data, 'post')
+    post: data => getPromise(`${baseURL}/oauth/token`, data, 'post')
   },
   questions: {
     get: data => getPromise(`${baseURL}/question/${data.id}`),
@@ -42,6 +43,12 @@ const api = {
   },
   image: {
     post: data => getPromise('http://localhost:3000', data, 'post')
+  },
+  user: {
+    get: data => getPromise(data.url)
+  },
+  users: {
+    get: () => getPromise(`${baseURL}/api/accounts/users`)
   }
 }
 

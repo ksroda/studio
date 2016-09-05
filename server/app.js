@@ -34,7 +34,7 @@ const token = '8ob86V8686o86oBkuybuyiHIYILBO88O6V8b8yhkuybwewfsbxccxuyYVKUYVYBL8
 app.use(function(req, res, next) {
   console.log(req.originalUrl)
   const tokenClient = req.headers.tycheat
-  if (token === tokenClient || req.originalUrl === '/login') {
+  if (token === tokenClient || req.originalUrl === '/oauth/token') {
     next()
   } else {
     res.status(401).send('Unauthorized')

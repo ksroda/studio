@@ -23,6 +23,7 @@
     "babel-plugin-transform-object-rest-spread": "^6.8.0",
     "concurrently": "^2.2.0",
     "lodash": "^4.15.0",
+    "qs": "^6.2.1",
     "webpack": "^1.13.2",
     "webpack-dev-server": "^1.15.1"
   },

@@ -23,7 +23,7 @@
     <!-- <link href="css/plugins/morris.css" rel="stylesheet"> -->
 
     <!-- Custom Fonts -->
-    <!-- <link href="font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css"> -->
+    <link href="font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
 
     <!-- <link href="css/tyche.css" rel="stylesheet"> -->
     <!-- <link href="tyche2.css" rel="stylesheet"> -->
@@ -165,7 +165,8 @@
       </div>
       <div class="tools">
         <div style="padding: 20px"><select ng-options="language | translate for language in languages" ng-model="language" ng-change="updateLanguage()"></select></div>
-        <div class="toolsItem">profile</div>
+        <div class="toolsItem" ng-click="goToPath('/profile')">profile</div>
+        <div class="toolsItem" ng-click="logout()"><i class="fa fa-power-off fa-lg"></i></div>
       </div>
     </nav>
 

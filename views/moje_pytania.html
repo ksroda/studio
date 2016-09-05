@@ -1,6 +1,6 @@
   <div class="" ng-init="canSeePage = false; canSeeModal = false">
     <div ng-if="!canSeePage">
-      <md-progress-circular class="md-hue" md-mode="indeterminate"></md-progress-circular>
+      <md-progress-circular class="md-hue loading" md-mode="indeterminate"></md-progress-circular>
     </div>
     <div ng-if="canSeePage">
       <!-- Page Heading -->
@@ -53,11 +53,11 @@
               <div class="modal-content">
                 <div class="modal-header">
                   <button type="button" class="close" data-dismiss="modal">&times;</button>
-                  <h4 class="modal-title">Modal Header</h4>
+                  <h4 class="modal-title">Edytuj pytanie</h4>
                 </div>
                 <div class="modal-body">
                   <div ng-if="!canSeeModal">
-                    <md-progress-circular class="md-hue" md-mode="indeterminate"></md-progress-circular>
+                    <md-progress-circular class="md-hue loading" md-mode="indeterminate"></md-progress-circular>
                   </div>
                   <div ng-if="canSeeModal">
                     <b>Treść pytania:</b>
@@ -109,7 +109,7 @@
           </div>
       </div>
 
-      <div id="pagination">
+      <div class="pagination">
         <div class="page" ng-repeat="page in allPages track by $index" ng-click="turnPage(page)">
           {{ page }}
         </div>

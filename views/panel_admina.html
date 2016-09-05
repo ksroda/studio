@@ -1,0 +1,23 @@
+
+<h1>Panel administratora</h1>
+<hr />
+<div class="panel-container">
+  <div class="users-list">
+    <ul>
+      <li ng-repeat="user in users" ng-click="viewUser(user.url)">{{ user.fullName }}</li>
+    </ul>
+  </div>
+  <div class="users-details">
+    <div class="users-row">
+      <labeled-text label="'Imię i nazwisko'" text="user.fullName || 'Brak'"></labeled-text>
+
+    </div>
+    <div class="users-row">
+      <labeled-text label="'Nazwa użytkownika'" text="user.userName || 'Brak'"></labeled-text>
+      <labeled-text label="'Email'" text="user.email || 'Brak'"></labeled-text>
+    </div>
+    <div class="users-row">
+      <labeled-text label="'Role użytkownika'" text="user.roles.join(', ') || 'Brak'"></labeled-text>
+    </div>
+  </div>
+</div>

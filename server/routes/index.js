@@ -21,8 +21,8 @@ const baza_pytan_data = _.range(1, 401).reduce((acc, id) => [
 ], [])
 
 /* GET home page. */
-router.post('/login', function (req, res, next) {
-  const { Email: login, Password: password } = req.body
+router.post('/oauth/token', function (req, res, next) {
+  const { username: login, password } = req.body
   console.log(req.body)
   if (login === 'jan' && password === 'mak') {
     res.send(token)

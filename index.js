@@ -20,6 +20,11 @@ const menuTree = [
     access: ['admin', 'teacher', 'student']
   },
   {
+    name: 'Panel',
+    path: '/panel',
+    access: ['admin']
+  },
+  {
     name: 'Baza pytań',
     target: 'baza',
     submenu: [
@@ -71,34 +76,38 @@ angular.module('myApp', [angularRoute, angularTranslate, angularContenteditable,
   .config(function($routeProvider) {
     $routeProvider
       .when("/", {
-          templateUrl : 'views/about.html'
+        templateUrl: 'views/about.html'
+      })
+      .when('/panel', {
+        templateUrl: 'views/panel_admina.html',
+        controller: 'panel_admina_controller'
       })
       .when('/baza_pytan', {
-          templateUrl : 'views/baza_pytan.html',
-          controller: 'baza_pytan_controller'
+        templateUrl: 'views/baza_pytan.html',
+        controller: 'baza_pytan_controller'
       })
       .when('/aktualne_pytania', {
-          templateUrl : 'views/aktualne_pytania.html'
+        templateUrl: 'views/aktualne_pytania.html'
       })
       .when('/dodaj_pytanie', {
-          templateUrl : 'views/dodaj_pytanie.html',
-          controller : 'add_question_controller'
+        templateUrl: 'views/dodaj_pytanie.html',
+        controller: 'add_question_controller'
       })
       .when('/profile', {
-          templateUrl : 'views/profile.html',
-          controller : 'profile_controller'
+        templateUrl: 'views/profile.html',
+        controller: 'profile_controller'
       })
       .when('/webcam', {
-          templateUrl : 'views/webcam.html',
-          controller: 'webcam_controller'
+        templateUrl: 'views/webcam.html',
+        controller: 'webcam_controller'
       })
       .when('/login', {
-        templateUrl : 'views/login.html',
-        controller : 'login_controller'
+        templateUrl: 'views/login.html',
+        controller: 'login_controller'
       })
       .when('/moje_pytania', {
-        templateUrl : 'views/moje_pytania.html',
-        controller : 'moje_pytania_controller'
+        templateUrl: 'views/moje_pytania.html',
+        controller: 'moje_pytania_controller'
       })
     })
 
@@ -131,7 +140,7 @@ angular.module('myApp', [angularRoute, angularTranslate, angularContenteditable,
     }
 
     const authentication = (login, password, rememberMe, callback) => {
-      API.login.post({ 'Login': '', 'Email': login, 'Password': password })
+      API.login.post({ username: login, password, 'grant_type': 'password' })
         .then(response => {
           console.log(response)
           $location.path(response.data ? '/' : '/login').replace()
@@ -149,7 +158,7 @@ angular.module('myApp', [angularRoute, angularTranslate, angularContenteditable,
           }
 
           storage.setItem('studioLogin', login)
-          storage.setItem('studioToken', response.data)
+          storage.setItem('studioToken', response.data.access_token)
           callback('')
         })
         .catch(error => {
@@ -382,7 +391,45 @@ angular.module('myApp', [angularRoute, angularTranslate, angularContenteditable,
       }]
     )
 
-    .directive("passwordVerify", function() {
+    .controller('panel_admina_controller', function ($scope, $location) {
+      $scope.users = []
+      $scope.user = {}
+
+      $scope.viewUser = (url) => {
+        API.user.get({ url })
+          .then(response => {
+            console.log(response)
+            $scope.$apply(function () {
+              $scope.user = response.data
+            })
+          })
+      }
+
+      API.users.get()
+        .then(response => {
+          console.log(response)
+          $scope.$apply(function () {
+            $scope.users = response.data
+          })
+        })
+        .catch(error => {
+          $location.path('/login').replace()
+          $scope.$apply()
+        })
+    })
+
+    .directive('labeledText', function () {
+      return {
+        restrict: 'E',
+        scope: {
+          label: '=',
+          text: '='
+        },
+        template: '<div class="labeled-text"><label>{{ label }}</label><div>{{ text }}<div></div><hr />'
+      }
+    })
+
+    .directive("passwordVerify", function () {
       // czajnik
       return {
         require: "ngModel",
